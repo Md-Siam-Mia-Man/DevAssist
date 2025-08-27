@@ -1,16 +1,16 @@
 {
   "name": "@devassist-for-ai/devassist",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Your AI Coding Copilot's Best Friend! A CLI toolkit to bridge the gap between your local code and your favorite AI assistant.",
   "author": "Md Siam Mia",
   "license": "MIT",
-  "homepage": "https://github.com/Md-Siam-Mia-Code/devassist#readme",
+  "homepage": "https://github.com/Md-Siam-Mia-Code/DevAssist#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Md-Siam-Mia-Code/devassist.git"
+    "url": "git+https://github.com/Md-Siam-Mia-Code/DevAssist.git"
   },
   "bugs": {
-    "url": "https://github.com/Md-Siam-Mia-Code/devassist/issues"
+    "url": "https://github.com/Md-Siam-Mia-Code/DevAssist/issues"
   },
   "bin": {
     "devassist": "bin/devassist.js"
