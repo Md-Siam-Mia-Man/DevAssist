@@ -1,0 +1,19 @@
+{
+  "ignoreDirs": [
+    "node_modules",
+    ".git",
+    "dist",
+    "coverage",
+    ".next"
+  ],
+  "ignoreFiles": [
+    ".env.local"
+  ],
+  "includeExt": [
+    ".js",
+    ".ts",
+    ".tsx",
+    ".json",
+    ".md"
+  ]
+}
