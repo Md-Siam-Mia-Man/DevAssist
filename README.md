@@ -1,7 +1,7 @@
 # DevAssist 🚀🤖
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/devassist"><img src="https://img.shields.io/npm/v/devassist.svg?style=for-the-badge&logo=npm" alt="npm version"/></a>
+  <a href="https://www.npmjs.com/package/@devassist-for-ai/devassist"><img src="https://img.shields.io/npm/v/@devassist-for-ai/devassist.svg?style=for-the-badge&logo=npm" alt="npm version"/></a>
   <a href="./LICENSE.md"><img src="https://img.shields.io/github/license/Md-Siam-Mia-Code/devassist?style=for-the-badge&color=blue" alt="license"/></a>
 </p>
 
@@ -44,8 +44,9 @@ Ever found yourself in a loop of...
 Install it globally using npm to get access to the `devassist` command from anywhere on your system!
 
 ```bash
-npm install -g devassist
+npm install -g @devassist-for-ai/devassist
 ```
+_**Note:** Even though the package name is scoped, the command you'll run is still the simple and convenient `devassist`!_
 
 ## 🛠️ Usage Guide
 
@@ -143,10 +144,7 @@ For project-specific rules, create a `.aiconfig.json` file in your project's roo
 
 ## 💬 A Word From The Creators
 
-This is a fun hobby project built to solve a problem we face every day. It's a collaboration between a human developer and the very AI systems it's designed to help.
-
-*   **The Human:** The initial idea, the endless debugging, and the real-world testing.
-*   **Gemini (The AI):** The boilerplate code, the architectural suggestions, the bug fixes, and the creative energy.
+This is a fun hobby project built to solve a problem we face every day. It's a collaboration between a human developer (**Md Siam Mia**) and the very AI systems it's designed to help (**Gemini**).
 
 We believe this human-AI partnership is the future of software development, and tools like DevAssist are a small step toward making that future more efficient and enjoyable for everyone.
 
