@@ -43,3 +43,6 @@ chunks.txt
 # For libraries, it's often ignored. For applications, it's often committed.
 # Since this is a tool, ignoring it can be a valid choice.
 package-lock.json
+
+# More
+*.txt
