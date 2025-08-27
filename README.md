@@ -2,7 +2,7 @@
 
 <p align="center">
   <a href="https://www.npmjs.com/package/@devassist-for-ai/devassist"><img src="https://img.shields.io/npm/v/@devassist-for-ai/devassist.svg?style=for-the-badge&logo=npm" alt="npm version"/></a>
-  <a href="./LICENSE.md"><img src="https://img.shields.io/github/license/Md-Siam-Mia-Code/devassist?style=for-the-badge&color=blue" alt="license"/></a>
+  <a href="./LICENSE.md"><img src="https://img.shields.io/github/license/Md-Siam-Mia-Code/DevAssist?style=for-the-badge&color=blue" alt="license"/></a>
 </p>
 
 <p align="center">
