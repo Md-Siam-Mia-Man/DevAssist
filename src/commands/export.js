@@ -3,6 +3,7 @@ const path = require("path");
 const kleur = require("kleur");
 const { loadConfig } = require("../utils/config-loader");
 const { drawTree, walkDir } = require("../utils/file-handler");
+const { detectFramework } = require("../utils/framework-detector");
 
 async function handleExport(options) {
   console.log(kleur.yellow("Starting project export..."));
@@ -10,6 +11,7 @@ async function handleExport(options) {
   const config = loadConfig();
   const projectDir = process.cwd();
   const outputFile = path.resolve(projectDir, options.output);
+  const framework = options.framework || detectFramework();
 
   config.ignoreFiles.push(path.basename(outputFile));
 
@@ -37,10 +39,12 @@ async function handleExport(options) {
     collectedFiles.push({ relativePath, content });
   });
 
-  fs.writeFileSync(
-    outputFile,
-    `# Project Export: ${path.basename(projectDir)}\n\n`
-  );
+  let outputContent = `# Project Export: ${path.basename(projectDir)}\n\n`;
+
+  if (framework !== "Unknown") {
+    outputContent += `## Project Framework\n\n`;
+    outputContent += `The primary detected framework for this project is: **${framework}**\n\n`;
+  }
 
   const tree = `/${path.basename(projectDir)}\n${drawTree(
     projectDir,
@@ -48,21 +52,20 @@ async function handleExport(options) {
     "",
     includePatterns
   )}`;
-  fs.appendFileSync(outputFile, "## Project Structure\n\n");
-  fs.appendFileSync(outputFile, "```plaintext\n");
-  fs.appendFileSync(outputFile, `${tree}\n`);
-  fs.appendFileSync(outputFile, "```\n\n");
+  outputContent += "## Project Structure\n\n";
+  outputContent += "```plaintext\n";
+  outputContent += `${tree}\n`;
+  outputContent += "```\n\n";
 
-  fs.appendFileSync(outputFile, "## File Contents\n\n");
+  outputContent += "## File Contents\n\n";
   collectedFiles.forEach(({ relativePath, content }) => {
-    fs.appendFileSync(outputFile, `### ${relativePath}\n\n`);
-    fs.appendFileSync(
-      outputFile,
-      "```" + `${path.extname(relativePath).substring(1)}\n`
-    );
-    fs.appendFileSync(outputFile, content);
-    fs.appendFileSync(outputFile, "\n```\n\n");
+    outputContent += `### ${relativePath}\n\n`;
+    outputContent += "```" + `${path.extname(relativePath).substring(1)}\n`;
+    outputContent += content;
+    outputContent += "\n```\n\n";
   });
+
+  fs.writeFileSync(outputFile, outputContent);
 
   console.log(
     kleur.green(`✅ Project exported successfully to ${kleur.bold(outputFile)}`)
