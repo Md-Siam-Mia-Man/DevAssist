@@ -34,11 +34,11 @@
     "automation"
   ],
   "dependencies": {
-    "commander": "^12.1.0",
-    "diff": "^5.2.0",
+    "commander": "^14.0.1",
+    "diff": "^8.0.2",
     "kleur": "^4.1.5"
   },
   "devDependencies": {
-    "npm-check-updates": "^16.14.20"
+    "npm-check-updates": "^19.0.0"
   }
 }
