@@ -33,6 +33,10 @@ program
     "--exclude <patterns>",
     "Comma-separated list of files/dirs to exclude (e.g., 'tests,dist')"
   )
+  .option(
+    "--framework <name>",
+    "Manually specify the project's framework (e.g., 'React', 'Django')"
+  )
   .action(handleExport);
 
 // --- CHUNK Command ---
