@@ -3,21 +3,63 @@ const path = require("path");
 
 const defaultConfig = {
   includeExt: [
-    ".html",
-    ".css",
     ".js",
     ".jsx",
     ".ts",
     ".tsx",
+    ".html",
+    ".css",
+    ".scss",
     ".json",
-    ".py",
     ".md",
+    ".py",
+    ".rb",
+    ".java",
+    ".kt",
+    ".cs",
+    ".php",
+    ".go",
+    ".rs",
+    ".swift",
+    ".c",
+    ".cpp",
+    ".h",
+    ".hpp",
     ".sh",
+    ".bash",
     ".yml",
     ".yaml",
+    ".sql",
+    ".xml",
+    ".toml",
+    ".lua",
+    ".pl",
+    ".dart",
+    ".ex",
+    ".exs",
+    ".r",
+    ".scala",
+    "Dockerfile",
   ],
-  ignoreDirs: ["node_modules", ".git", ".vscode", "dist", "build"],
-  ignoreFiles: ["package-lock.json", "yarn.lock", "npm-debug.log"],
+  ignoreDirs: [
+    "node_modules",
+    ".git",
+    ".vscode",
+    "dist",
+    "build",
+    "coverage",
+    ".next",
+    ".idea",
+    "venv",
+  ],
+  ignoreFiles: [
+    "package-lock.json",
+    "yarn.lock",
+    "npm-debug.log",
+    ".DS_Store",
+    ".env",
+    ".env.local",
+  ],
 };
 
 function loadConfig() {
@@ -25,7 +67,6 @@ function loadConfig() {
   if (fs.existsSync(configPath)) {
     try {
       const userConfig = JSON.parse(fs.readFileSync(configPath, "utf8"));
-      // Merge user config with default, user config takes precedence
       return {
         includeExt: userConfig.includeExt || defaultConfig.includeExt,
         ignoreDirs: [
