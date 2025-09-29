@@ -15,7 +15,7 @@
 ---
 
 <p align="center">
-  <em>"Made for AI developers by an AI developer and an AI assistant."</em>
+  <em>"Made for developers by a developer and an AI assistant."</em>
 </p>
 
 ---
@@ -24,20 +24,21 @@
 
 Ever found yourself in a loop of...
 
-*   😭 Trying to paste your entire project into a chat window, only to hit the context limit?
-*   😵‍💫 Manually copying and pasting a dozen files, losing all sense of the project's structure?
-*   🧩 Pasting just an error message, knowing the AI needs more context but not wanting to find and copy it all?
-*   🥱 Writing boring commit messages when an AI could do it better with the right `git diff`?
+- 😭 Trying to paste your entire project into a chat window, only to hit the context limit?
+- 😵‍💫 Manually copying and pasting a dozen files, losing all sense of the project's structure?
+- 🧩 Pasting just an error message, knowing the AI needs more context but not wanting to find and copy it all?
+- 🥱 Writing boring commit messages when an AI could do it better with the right `git diff`?
 
 **DevAssist is here to fix that!** It's a simple, powerful toolkit designed to eliminate the friction between your local development workflow and Large Language Models (LLMs). It programmatically packages your code, diffs, and errors into perfect, context-rich prompts, so you can spend less time copy-pasting and more time building.
 
 ## ✨ Features
 
-*   **📦 `export`**: Bundle your entire project structure and code into a single, clean text file.
-*   **🔪 `chunk`**: Slice large files into AI-friendly, digestible chunks with a handy table of contents.
-*   **🎭 `diff`**: Show a Git-style diff to your AI, providing crucial "before and after" context.
-*   **🚑 `error`**: Instantly package an error log with the relevant code snippet that caused it.
-*   **✍️ `commit`**: Generate a context-aware `git diff` to have an AI write your commit messages for you.
+- **📦 `export`**: Bundle your entire project structure and code into a single, clean text file.
+- **🧠 `Intelligent Framework Detection`**: Automatically detects your project's framework (React, Vue, Django, etc.) to give your AI better high-level context.
+- **🔪 `chunk`**: Slice large files into AI-friendly, digestible chunks with a handy table of contents.
+- **🎭 `diff`**: Show a Git-style diff to your AI, providing crucial "before and after" context.
+- **🚑 `error`**: Instantly package an error log with the relevant code snippet that caused it.
+- **✍️ `commit`**: Generate a context-aware `git diff` to have an AI write your commit messages for you.
 
 ## 📦 Installation
 
@@ -46,16 +47,19 @@ Install it globally using npm to get access to the `devassist` command from anyw
 ```bash
 npm install -g @devassist-for-ai/devassist
 ```
+
 _**Note:** Even though the package name is scoped, the command you'll run is still the simple and convenient `devassist`!_
 
 ## 🛠️ Usage Guide
 
 ### `devassist export`
-Exports your project code and structure into a single `Code.txt` file.
+
+Exports your project code and structure into a single file. It intelligently detects your framework to give your AI the best possible context.
 
 **Usage:**
+
 ```bash
-# Export the whole project
+# Export the whole project (with automatic framework detection)
 devassist export
 
 # Export only specific folders/files to a custom output file
@@ -63,12 +67,17 @@ devassist export --only src,package.json --output context.md
 
 # Exclude specific folders
 devassist export --exclude tests,dist
+
+# Manually specify the framework to override detection
+devassist export --framework "Next.js"
 ```
 
 ### `devassist chunk <file>`
+
 Splits a large file into smaller parts, perfect for staying within an AI's context limit.
 
 **Usage:**
+
 ```bash
 # Chunk a file into default 150-line parts and print to console
 devassist chunk src/utils/file-handler.js
@@ -78,9 +87,11 @@ devassist chunk src/very-big-file.js --max-lines 50 --output chunks.txt
 ```
 
 ### `devassist diff <file> [commit]`
+
 Generates a diff of a file against the last commit (`HEAD`) or a specific commit hash.
 
 **Usage:**
+
 ```bash
 # See changes in a file compared to the last commit
 devassist diff src/commands/export.js
@@ -90,20 +101,25 @@ devassist diff src/commands/export.js a1b2c3d
 ```
 
 ### `devassist error <logfile>`
+
 Grabs an error from a log file and bundles it with the surrounding code for easy debugging with an AI.
 
 **Usage:**
+
 ```bash
 # (First, you need a log file with an error in it!)
 # Then run:
 devassist error logs/app-error.log
 ```
+
 _This will output a perfectly formatted block to copy to your AI._
 
 ### `devassist commit`
+
 Generates a context bundle from your staged Git changes, ready for an AI to write a commit message.
 
 **Usage:**
+
 ```bash
 # 1. Stage your changes
 git add .
@@ -117,34 +133,21 @@ devassist commit --full
 
 ## ⚙️ Configuration
 
-For project-specific rules, create a `.aiconfig.json` file in your project's root. It works just like a `.gitignore` file!
+For project-specific rules, create a `.aiconfig.json` file in your project's root. The default configuration already supports a wide variety of languages and ignores common directories like `node_modules`.
 
 **Example `.aiconfig.json`:**
+
 ```json
 {
-  "ignoreDirs": [
-    "node_modules",
-    ".git",
-    "dist",
-    "coverage",
-    ".next"
-  ],
-  "ignoreFiles": [
-    ".env.local"
-  ],
-  "includeExt": [
-    ".js",
-    ".ts",
-    ".tsx",
-    ".json",
-    ".md"
-  ]
+  "ignoreDirs": ["node_modules", ".git", "dist", "coverage", ".next"],
+  "ignoreFiles": [".env.local"],
+  "includeExt": [".js", ".ts", ".tsx", ".json", ".md"]
 }
 ```
 
 ## 💬 A Word From The Creators
 
-This is a fun hobby project built to solve a problem we face every day. It's a collaboration between a human developer (**Md Siam Mia**) and the very AI systems it's designed to help (**Gemini**).
+This is a fun hobby project built to solve a problem we face every day. It's a collaboration between a human developer (**Md Siam Mia**) and the very AI systems it's designed to help.
 
 We believe this human-AI partnership is the future of software development, and tools like DevAssist are a small step toward making that future more efficient and enjoyable for everyone.
 
@@ -154,4 +157,4 @@ Found a bug? Have a great idea? We'd love your help! This is an open-source proj
 
 ## 📄 License
 
-This project is licensed under the **MIT License**. See the [LICENSE.md](./LICENSE.md) file for details.
+This project is licensed under the **MIT License**. See the [LICENSE](./LICENSE.md) file for details.
