@@ -24,23 +24,28 @@ function handleCommit(options) {
       context += "## Full File Contents (Before and After)\n\n";
       const changedFiles = diffOutput.trim().split("\n");
       changedFiles.forEach((file) => {
-        let oldContent = ""; // Default to empty string for new files
+        const newContent = fs
+          .readFileSync(path.resolve(process.cwd(), file), "utf8")
+          .replace(/`/g, "\\`");
+        let oldContent = "";
+        let isNewFile = false;
+
         try {
-          // This will fail for new files, which is what we want.
           oldContent = execSync(`git show HEAD:"${file}"`, {
             encoding: "utf8",
             stdio: "pipe",
           }).replace(/`/g, "\\`");
         } catch (e) {
-          // This is a new file, so oldContent remains empty. That's correct.
+          isNewFile = true;
         }
 
-        const newContent = fs
-          .readFileSync(path.resolve(process.cwd(), file), "utf8")
-          .replace(/`/g, "\\`");
-
-        context += `### ${file} (New File)\n\n`;
-        context += "#### BEFORE:\n```\n(This is a new file)\n```\n";
+        if (isNewFile) {
+          context += `### ${file} (New File)\n\n`;
+          context += "#### BEFORE:\n```\n(This is a new file)\n```\n";
+        } else {
+          context += `### ${file} (Modified)\n\n`;
+          context += "#### BEFORE:\n```\n" + oldContent + "\n```\n";
+        }
         context += "#### AFTER:\n```\n" + newContent + "\n```\n---\n";
       });
     } else {
