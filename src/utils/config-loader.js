@@ -40,6 +40,8 @@ const defaultConfig = {
     ".r",
     ".scala",
     "Dockerfile",
+    ".gitignore",
+    ".gitattributes",
   ],
   ignoreDirs: [
     "node_modules",
@@ -60,6 +62,80 @@ const defaultConfig = {
     ".env",
     ".env.local",
   ],
+  ignoreExt: [
+    ".png",
+    ".jpg",
+    ".jpeg",
+    ".gif",
+    ".bmp",
+    ".tiff",
+    ".ico",
+    ".svg",
+    ".webp",
+    ".mp4",
+    ".mov",
+    ".avi",
+    ".wmv",
+    ".mp3",
+    ".wav",
+    ".ogg",
+    ".zip",
+    ".tar",
+    ".gz",
+    ".rar",
+    ".7z",
+    ".pdf",
+    ".doc",
+    ".docx",
+    ".xls",
+    ".xlsx",
+    ".ppt",
+    ".pptx",
+    ".exe",
+    ".dll",
+    ".so",
+    ".o",
+    ".a",
+    ".lib",
+    ".jar",
+    ".war",
+    ".class",
+    ".pyc",
+    ".pyd",
+    ".lock",
+    ".db",
+    ".sqlite",
+    ".sqlite3",
+    ".bak",
+    ".tmp",
+    ".swp",
+    ".safetensors",
+    ".pth",
+    ".onnx",
+    ".woff",
+    ".woff2",
+    ".ttf",
+    ".eot",
+    ".pak",
+    ".bin",
+    ".dat",
+  ],
+  ignorePatterns: [
+    "**/__pycache__/**",
+    "**/assets/**",
+    "**/static/**",
+    "**/vendor/**",
+    "**/release/**",
+    "**/outputs/**",
+    "**/models/**",
+    "**/data/**",
+    "**/weights/**",
+    "**/loras/**",
+    "**/bin/**",
+    "**/obj/**",
+    "**/target/**",
+    "**/.terragrunt-cache/**",
+  ],
 };
 
 function loadConfig() {
@@ -67,7 +143,7 @@ function loadConfig() {
   if (fs.existsSync(configPath)) {
     try {
       const userConfig = JSON.parse(fs.readFileSync(configPath, "utf8"));
-      return {
+      const mergedConfig = {
         includeExt: userConfig.includeExt || defaultConfig.includeExt,
         ignoreDirs: [
           ...new Set([
@@ -81,7 +157,20 @@ function loadConfig() {
             ...(userConfig.ignoreFiles || []),
           ]),
         ],
+        ignoreExt: [
+          ...new Set([
+            ...defaultConfig.ignoreExt,
+            ...(userConfig.ignoreExt || []),
+          ]),
+        ],
+        ignorePatterns: [
+          ...new Set([
+            ...defaultConfig.ignorePatterns,
+            ...(userConfig.ignorePatterns || []),
+          ]),
+        ],
       };
+      return mergedConfig;
     } catch (error) {
       console.error("Error reading or parsing .aiconfig.json:", error);
       return defaultConfig;
