@@ -1,6 +1,6 @@
 {
   "name": "@devassist-for-ai/devassist",
-  "version": "1.5.1",
+  "version": "1.6.0",
   "description": "Your AI Coding Copilot's Best Friend! A CLI toolkit to bridge the gap between your local code and your favorite AI assistant.",
   "author": "Md Siam Mia",
   "license": "MIT",
