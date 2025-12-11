@@ -14,7 +14,17 @@ function handleDiff(file, commit = "HEAD") {
 
   let oldContent;
   try {
-    oldContent = execSync(`git show ${commit}:${file}`, { encoding: "utf8" });
+    // Check if git is installed
+    try {
+      execSync("git --version", { stdio: "ignore" });
+    } catch (e) {
+      console.error(kleur.red("Error: git is not installed or not in the PATH."));
+      process.exit(1);
+    }
+    // Using double quotes for file path to handle spaces
+    // Git expects forward slashes for paths in revision:path syntax
+    const gitFile = file.replace(/\\/g, "/");
+    oldContent = execSync(`git show ${commit}:"${gitFile}"`, { encoding: "utf8" });
   } catch (error) {
     console.error(
       kleur.red(

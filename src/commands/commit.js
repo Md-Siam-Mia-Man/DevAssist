@@ -5,6 +5,14 @@ const kleur = require("kleur");
 
 function handleCommit(options) {
   try {
+    // Check if git is installed
+    try {
+      execSync("git --version", { stdio: "ignore" });
+    } catch (e) {
+      console.error(kleur.red("Error: git is not installed or not in the PATH."));
+      process.exit(1);
+    }
+
     const diffOutput = execSync("git diff --staged --name-only", {
       encoding: "utf8",
     });
@@ -31,7 +39,8 @@ function handleCommit(options) {
         let isNewFile = false;
 
         try {
-          oldContent = execSync(`git show HEAD:"${file}"`, {
+          const gitFile = file.replace(/\\/g, "/");
+          oldContent = execSync(`git show HEAD:"${gitFile}"`, {
             encoding: "utf8",
             stdio: "pipe",
           }).replace(/`/g, "\\`");

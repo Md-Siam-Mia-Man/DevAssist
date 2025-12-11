@@ -37,7 +37,9 @@ function handleChunk(file, options) {
     output += `## Chunk ${i + 1} of ${totalChunks} (Lines ${
       startLine + 1
     }-${Math.min(endLine, lines.length)})\n\n`;
-    output += "```" + `${path.extname(file).substring(1)}\n`;
+    const ext = path.extname(file);
+    const lang = ext ? ext.substring(1) : "";
+    output += "```" + `${lang}\n`;
     output += chunkContent;
     output += "\n```\n\n";
   }
