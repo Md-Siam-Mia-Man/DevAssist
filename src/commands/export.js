@@ -26,11 +26,11 @@ async function handleExport(options) {
   await walkDir(projectDir, config, (filePath) => {
     if (
       includePatterns &&
-      !includePatterns.some((p) => filePath.startsWith(p))
+      !includePatterns.some((p) => filePath === p || filePath.startsWith(p + path.sep))
     ) {
       return;
     }
-    if (excludePatterns.some((p) => filePath.startsWith(p))) {
+    if (excludePatterns.some((p) => filePath === p || filePath.startsWith(p + path.sep))) {
       return;
     }
 

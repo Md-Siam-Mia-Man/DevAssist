@@ -45,10 +45,10 @@ function drawTree(dir, config, prefix = "", includedFiles = null) {
 
     if (
       includedFiles &&
-      !includedFiles.some((inc) => filePath.startsWith(inc))
+      !includedFiles.some((inc) => filePath === inc || filePath.startsWith(inc + path.sep))
     ) {
       if (!fsSync.statSync(filePath).isDirectory()) return;
-      if (!includedFiles.some((inc) => inc.startsWith(filePath))) return;
+      if (!includedFiles.some((inc) => inc === filePath || inc.startsWith(filePath + path.sep))) return;
     }
 
     if (fsSync.statSync(filePath).isDirectory()) {
