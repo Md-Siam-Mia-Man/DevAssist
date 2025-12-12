@@ -2,7 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const kleur = require("kleur");
 const { loadConfig } = require("../utils/config-loader");
-const { drawTree, walkDir } = require("../utils/file-handler");
+const { listFiles, walkDir } = require("../utils/file-handler");
 const { detectFramework } = require("../utils/framework-detector");
 
 async function handleExport(options) {
@@ -46,24 +46,19 @@ async function handleExport(options) {
     outputContent += `The primary detected framework for this project is: **${framework}**\n\n`;
   }
 
-  const tree = `/${path.basename(projectDir)}\n${drawTree(
-    projectDir,
-    config,
-    "",
-    includePatterns
-  )}`;
-  outputContent += "## Project Structure\n\n";
-  outputContent += "```plaintext\n";
-  outputContent += `${tree}\n`;
-  outputContent += "```\n\n";
+  const fileList = listFiles(projectDir, config, projectDir, includePatterns);
 
-  outputContent += "## File Contents\n\n";
+  outputContent += "<project_structure>\n";
+  outputContent += fileList.join("\n") + "\n";
+  outputContent += "</project_structure>\n\n";
+
+  outputContent += "<files>\n";
   collectedFiles.forEach(({ relativePath, content }) => {
-    outputContent += `### ${relativePath}\n\n`;
-    outputContent += "```" + `${path.extname(relativePath).substring(1)}\n`;
-    outputContent += content;
-    outputContent += "\n```\n\n";
+    outputContent += `<file path="${relativePath}">\n`;
+    outputContent += content + "\n";
+    outputContent += "</file>\n\n";
   });
+  outputContent += "</files>\n";
 
   fs.writeFileSync(outputFile, outputContent);
 
