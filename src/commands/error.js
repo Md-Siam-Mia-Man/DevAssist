@@ -5,7 +5,7 @@ const kleur = require("kleur");
 function handleError(logfile, options) {
   const logPath = path.resolve(process.cwd(), logfile);
   if (!fs.existsSync(logPath)) {
-    console.error(kleur.red(`Error: Log file not found at ${logPath}`));
+    console.error(kleur.red(`❌ Error: Log file not found at ${logPath}`));
     process.exit(1);
   }
 
@@ -20,10 +20,10 @@ function handleError(logfile, options) {
   if (!match) {
     console.error(
       kleur.red(
-        "Could not find a valid file path and line number in the log file."
+        "❌ Could not find a valid file path and line number in the log file."
       )
     );
-    console.log(kleur.yellow("Pasting the full log for context:\n"));
+    console.log(kleur.yellow("⚠️  Pasting the full log for context:\n"));
     console.log(logContent);
     return;
   }
@@ -44,7 +44,7 @@ function handleError(logfile, options) {
   if (!fs.existsSync(codeFilePath)) {
     console.error(
       kleur.red(
-        `Code file not found: ${errorFile}. Tried resolving against CWD and log file location.`
+        `❌ Code file not found: ${errorFile}. Tried resolving against CWD and log file location.`
       )
     );
     return;
@@ -83,7 +83,7 @@ function handleError(logfile, options) {
 
   console.log(output);
   console.log(
-    kleur.cyan("\n📋 Above context is ready to be copied to an AI assistant.")
+    kleur.cyan("\n📋 The context above is ready to be copied to your AI assistant.")
   );
 }
 

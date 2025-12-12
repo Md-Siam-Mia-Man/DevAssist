@@ -6,12 +6,17 @@ const { listFiles, walkDir } = require("../utils/file-handler");
 const { detectFramework } = require("../utils/framework-detector");
 
 async function handleExport(options) {
-  console.log(kleur.yellow("Starting project export..."));
+  console.log(kleur.blue(`\n🚀 Starting project export...`));
+  console.log(kleur.dim("─".repeat(40)));
 
   const config = loadConfig();
   const projectDir = process.cwd();
   const outputFile = path.resolve(projectDir, options.output);
   const framework = options.framework || detectFramework();
+
+  if (framework !== "Unknown") {
+      console.log(kleur.cyan(`ℹ️  Detected Framework: ${kleur.bold(framework)}`));
+  }
 
   config.ignoreFiles.push(path.basename(outputFile));
 
@@ -62,9 +67,13 @@ async function handleExport(options) {
 
   fs.writeFileSync(outputFile, outputContent);
 
+  console.log(kleur.dim("─".repeat(40)));
   console.log(
-    kleur.green(`✅ Project exported successfully to ${kleur.bold(outputFile)}`)
+    kleur.green(`✅ Project exported successfully!`)
   );
+  console.log(`📁 Output: ${kleur.bold().underline(outputFile)}`);
+  console.log(`📊 Stats:  ${collectedFiles.length} files included.`);
+  console.log("");
 }
 
 module.exports = { handleExport };
