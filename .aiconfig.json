@@ -11,9 +11,31 @@
   ],
   "includeExt": [
     ".js",
+    ".jsx",
     ".ts",
     ".tsx",
     ".json",
-    ".md"
+    ".md",
+    ".py",
+    ".css",
+    ".html",
+    ".java",
+    ".c",
+    ".cpp",
+    ".cs",
+    ".php",
+    ".go",
+    ".rb",
+    ".rs",
+    ".swift",
+    ".scala",
+    ".kt",
+    ".sh",
+    ".yaml",
+    ".yml",
+    ".sql",
+    ".xml",
+    ".pl",
+    ".dockerfile"
   ]
 }
