@@ -5,7 +5,7 @@ const kleur = require("kleur");
 function handleChunk(file, options) {
   const filePath = path.resolve(process.cwd(), file);
   if (!fs.existsSync(filePath)) {
-    console.error(kleur.red(`Error: File not found at ${filePath}`));
+    console.error(kleur.red(`❌ Error: File not found at ${filePath}`));
     process.exit(1);
   }
 
@@ -15,8 +15,8 @@ function handleChunk(file, options) {
   const totalChunks = Math.ceil(lines.length / maxLines);
 
   console.log(
-    kleur.yellow(
-      `Chunking file ${kleur.bold(file)} into ${totalChunks} parts...\n`
+    kleur.blue(
+      `🔪 Chunking file ${kleur.bold(file)} into ${totalChunks} parts...`
     )
   );
 

@@ -30,41 +30,34 @@ function isIgnored(filePath, config, baseDir = process.cwd()) {
   return false;
 }
 
-function drawTree(dir, config, prefix = "", includedFiles = null) {
-  let result = "";
-  const files = fsSync
-    .readdirSync(dir)
-    .filter((f) => !isIgnored(path.join(dir, f), config));
+function listFiles(dir, config, baseDir = dir, includedFiles = null) {
+  let results = [];
+  const list = fsSync.readdirSync(dir);
 
-  const lastIndex = files.length - 1;
+  list.forEach((file) => {
+    const fullPath = path.join(dir, file);
 
-  files.forEach((file, index) => {
-    const filePath = path.join(dir, file);
-    const isLast = index === lastIndex;
-    const connector = isLast ? "└── " : "├── ";
-
-    if (
-      includedFiles &&
-      !includedFiles.some((inc) => filePath === inc || filePath.startsWith(inc + path.sep))
-    ) {
-      if (!fsSync.statSync(filePath).isDirectory()) return;
-      if (!includedFiles.some((inc) => inc === filePath || inc.startsWith(filePath + path.sep))) return;
+    if (isIgnored(fullPath, config, baseDir)) {
+      return;
     }
 
-    if (fsSync.statSync(filePath).isDirectory()) {
-      result += `${prefix}${connector}${file}/\n`;
-      result += drawTree(
-        filePath,
-        config,
-        prefix + (isLast ? "    " : "│   "),
-        includedFiles
+    const stat = fsSync.statSync(fullPath);
+    if (stat && stat.isDirectory()) {
+      results = results.concat(
+        listFiles(fullPath, config, baseDir, includedFiles)
       );
     } else {
-      result += `${prefix}${connector}${file}\n`;
+      if (includedFiles) {
+        const isMatch = includedFiles.some(
+          (inc) => fullPath === inc || fullPath.startsWith(inc + path.sep)
+        );
+        if (!isMatch) return;
+      }
+      results.push(path.relative(baseDir, fullPath));
     }
   });
 
-  return result;
+  return results;
 }
 
 async function walkDir(dir, config, callback, baseDir = dir) {
@@ -90,4 +83,4 @@ async function walkDir(dir, config, callback, baseDir = dir) {
   }
 }
 
-module.exports = { drawTree, walkDir };
+module.exports = { listFiles, walkDir };

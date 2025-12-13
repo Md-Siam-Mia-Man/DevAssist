@@ -9,7 +9,7 @@ function handleCommit(options) {
     try {
       execSync("git --version", { stdio: "ignore" });
     } catch (e) {
-      console.error(kleur.red("Error: git is not installed or not in the PATH."));
+      console.error(kleur.red("❌ Error: git is not installed or not in the PATH."));
       process.exit(1);
     }
 
@@ -19,7 +19,7 @@ function handleCommit(options) {
     if (!diffOutput.trim()) {
       console.log(
         kleur.yellow(
-          "No staged changes found. Please stage your changes with `git add` first."
+          "⚠️  No staged changes found. Please stage your changes with `git add` first."
         )
       );
       return;
@@ -68,12 +68,14 @@ function handleCommit(options) {
     console.log(context);
     console.log(
       kleur.cyan(
-        "\n📋 Above context is ready to be copied to an AI assistant to generate a commit message."
+        "\n📋 The context above is ready to be copied to your AI assistant."
       )
     );
+    console.log(kleur.dim("─".repeat(50)));
+    console.log(kleur.green("💡 Tip: Use this context to generate a conventional commit message."));
   } catch (error) {
     console.error(
-      kleur.red("An error occurred during commit context generation:"),
+      kleur.red("❌ An error occurred during commit context generation:"),
       error.message
     );
     process.exit(1);
