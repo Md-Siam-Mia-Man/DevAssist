@@ -8,6 +8,7 @@ const { handleChunk } = require("../src/commands/chunk");
 const { handleDiff } = require("../src/commands/diff");
 const { handleError } = require("../src/commands/error");
 const { handleCommit } = require("../src/commands/commit");
+const { handleRemoveComments } = require("../src/commands/remove-comments");
 
 const program = new Command();
 
@@ -77,5 +78,12 @@ program
     "Include full file content for more context, not just the diff."
   )
   .action(handleCommit);
+
+// --- REMOVE COMMENTS Command ---
+program
+  .command("remove-comments [pattern]")
+  .alias("rc")
+  .description("Remove all comments from files (supports any language/framework).")
+  .action(handleRemoveComments);
 
 program.parse(process.argv);
