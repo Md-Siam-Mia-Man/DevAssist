@@ -22,7 +22,7 @@
     "LICENSE.md"
   ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node tests/test_export.js"
   },
   "keywords": [
     "ai",

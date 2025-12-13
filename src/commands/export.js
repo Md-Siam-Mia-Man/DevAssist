@@ -1,8 +1,9 @@
 const fs = require("fs");
 const path = require("path");
 const kleur = require("kleur");
+const { minimatch } = require("minimatch");
 const { loadConfig } = require("../utils/config-loader");
-const { drawTree, walkDir } = require("../utils/file-handler");
+const { walkDir } = require("../utils/file-handler");
 const { detectFramework } = require("../utils/framework-detector");
 
 async function handleExport(options) {
@@ -16,54 +17,64 @@ async function handleExport(options) {
   config.ignoreFiles.push(path.basename(outputFile));
 
   const collectedFiles = [];
+
+  // Use minimatch for include/exclude patterns
+  // We keep them as strings to check against relative paths
   let includePatterns = options.only
-    ? options.only.split(",").map((p) => path.join(projectDir, p.trim()))
+    ? options.only.split(",").map((p) => p.trim())
     : null;
   let excludePatterns = options.exclude
-    ? options.exclude.split(",").map((p) => path.join(projectDir, p.trim()))
+    ? options.exclude.split(",").map((p) => p.trim())
     : [];
 
   await walkDir(projectDir, config, (filePath) => {
-    if (
-      includePatterns &&
-      !includePatterns.some((p) => filePath === p || filePath.startsWith(p + path.sep))
-    ) {
-      return;
-    }
-    if (excludePatterns.some((p) => filePath === p || filePath.startsWith(p + path.sep))) {
-      return;
+    const relativePath = path.relative(projectDir, filePath);
+
+    if (includePatterns) {
+      const isIncluded = includePatterns.some((pattern) =>
+        minimatch(relativePath, pattern, { dot: true }) ||
+        relativePath.startsWith(pattern + path.sep) ||
+        relativePath === pattern
+      );
+      if (!isIncluded) {
+        return;
+      }
     }
 
-    const relativePath = path.relative(projectDir, filePath);
+    if (excludePatterns.length > 0) {
+       const isExcluded = excludePatterns.some((pattern) =>
+        minimatch(relativePath, pattern, { dot: true }) ||
+        relativePath.startsWith(pattern + path.sep) ||
+        relativePath === pattern
+      );
+      if (isExcluded) {
+        return;
+      }
+    }
+
     const content = fs.readFileSync(filePath, "utf8");
     collectedFiles.push({ relativePath, content });
   });
 
-  let outputContent = `# Project Export: ${path.basename(projectDir)}\n\n`;
-
+  // Generate XML Output
+  let outputContent = `<project_structure>\n`;
   if (framework !== "Unknown") {
-    outputContent += `## Project Framework\n\n`;
-    outputContent += `The primary detected framework for this project is: **${framework}**\n\n`;
+    outputContent += `  <framework>${framework}</framework>\n`;
   }
 
-  const tree = `/${path.basename(projectDir)}\n${drawTree(
-    projectDir,
-    config,
-    "",
-    includePatterns
-  )}`;
-  outputContent += "## Project Structure\n\n";
-  outputContent += "```plaintext\n";
-  outputContent += `${tree}\n`;
-  outputContent += "```\n\n";
-
-  outputContent += "## File Contents\n\n";
-  collectedFiles.forEach(({ relativePath, content }) => {
-    outputContent += `### ${relativePath}\n\n`;
-    outputContent += "```" + `${path.extname(relativePath).substring(1)}\n`;
-    outputContent += content;
-    outputContent += "\n```\n\n";
+  outputContent += `  <files_list>\n`;
+  collectedFiles.forEach(({ relativePath }) => {
+     outputContent += `    <path>${relativePath}</path>\n`;
   });
+  outputContent += `  </files_list>\n`;
+
+  collectedFiles.forEach(({ relativePath, content }) => {
+    outputContent += `  <file path="${relativePath}">\n`;
+    outputContent += `<![CDATA[\n${content}\n]]>\n`;
+    outputContent += `  </file>\n`;
+  });
+
+  outputContent += `</project_structure>`;
 
   fs.writeFileSync(outputFile, outputContent);
 
