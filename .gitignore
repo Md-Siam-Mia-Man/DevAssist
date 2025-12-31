@@ -28,6 +28,9 @@ Thumbs.db
 /build
 /coverage
 
+# Test temporary directories
+.tmp-test-*
+
 # Environment variables
 .env
 .env.*
