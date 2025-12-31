@@ -75,8 +75,9 @@ function listFiles(dir, config, baseDir = dir, includedFiles = null, useGitIgnor
              // Apply includeExt filter
              const ext = path.extname(file);
              if (
-                 config.includeExt.includes(ext) ||
-                 config.includeExt.includes(file)
+                 config.includeExt &&
+                 (config.includeExt.includes(ext) ||
+                 config.includeExt.includes(file))
              ) {
                  results.push(relativePath);
              }
@@ -115,8 +116,9 @@ async function walkDir(dir, config, callback, baseDir = dir, useGitIgnore = fals
             // Apply includeExt filter
             const ext = path.extname(entry.name);
             if (
-                config.includeExt.includes(ext) ||
-                config.includeExt.includes(entry.name)
+                config.includeExt &&
+                (config.includeExt.includes(ext) ||
+                config.includeExt.includes(entry.name))
             ) {
                 await callback(fullPath);
             }
