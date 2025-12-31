@@ -74,4 +74,78 @@ describe('file-handler', () => {
         expect(ignoreInstance.add).toHaveBeenCalledWith('dist/');
         expect(cb).toHaveBeenCalled();
     });
+
+    it('listFiles should filter out files when ignores returns true', () => {
+        fsSync.existsSync.mockReturnValue(true);
+        fsSync.readFileSync.mockReturnValue('node_modules\n*.log');
+        fsSync.readdirSync.mockReturnValueOnce(['file.js', 'test.log']);
+        fsSync.statSync
+            .mockReturnValueOnce({ isDirectory: () => false }) // file.js
+            .mockReturnValueOnce({ isDirectory: () => false }); // test.log
+
+        const ignoreInstance = {
+            add: jest.fn(),
+            ignores: jest.fn((path) => {
+                return path === 'test.log';
+            })
+        };
+        ignore.mockReturnValue(ignoreInstance);
+
+        const result = listFiles('/test', config, '/test', null, true);
+
+        expect(result).toEqual(['file.js']);
+        expect(result).not.toContain('test.log');
+    });
+
+    it('walkDir should skip ignored files and directories', async () => {
+        fsSync.existsSync.mockReturnValue(true);
+        fsSync.readFileSync.mockReturnValue('node_modules\n*.tmp');
+
+        const entries = [
+            { name: 'file.js', isFile: () => true, isDirectory: () => false },
+            { name: 'test.tmp', isFile: () => true, isDirectory: () => false },
+            { name: 'node_modules', isFile: () => false, isDirectory: () => true }
+        ];
+        fs.readdir.mockResolvedValue(entries);
+
+        const ignoreInstance = {
+            add: jest.fn(),
+            ignores: jest.fn((path) => {
+                return path === 'test.tmp' || path === 'node_modules/';
+            })
+        };
+        ignore.mockReturnValue(ignoreInstance);
+
+        const cb = jest.fn();
+        await walkDir('/test', config, cb, '/test', true);
+
+        // Callback should only be called for non-ignored files matching includeExt
+        expect(cb).toHaveBeenCalledTimes(1);
+        expect(cb).toHaveBeenCalledWith('/test/file.js');
+        expect(cb).not.toHaveBeenCalledWith('/test/test.tmp');
+    });
+
+    it('listFiles should handle complex ignore patterns', () => {
+        fsSync.existsSync.mockReturnValue(true);
+        fsSync.readFileSync.mockReturnValue('*.log');
+        
+        // Use mockReturnValueOnce to ensure proper test isolation
+        fsSync.readdirSync.mockReturnValueOnce(['app.js', 'debug.log']);
+        fsSync.statSync
+            .mockReturnValueOnce({ isDirectory: () => false }) // app.js
+            .mockReturnValueOnce({ isDirectory: () => false }); // debug.log
+
+        const ignoreInstance = {
+            add: jest.fn(),
+            ignores: jest.fn((path) => {
+                return path === 'debug.log';
+            })
+        };
+        ignore.mockReturnValue(ignoreInstance);
+
+        const result = listFiles('/test', config, '/test', null, true);
+
+        expect(result).toEqual(['app.js']);
+        expect(result).not.toContain('debug.log');
+    });
 });
