@@ -22,7 +22,7 @@
     "LICENSE.md"
   ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "keywords": [
     "ai",
@@ -36,11 +36,13 @@
   "dependencies": {
     "commander": "^14.0.1",
     "diff": "^8.0.2",
+    "ignore": "^7.0.5",
     "kleur": "^4.1.5",
     "minimatch": "^10.1.1",
     "strip-comments": "^2.0.1"
   },
   "devDependencies": {
+    "jest": "^29.7.0",
     "npm-check-updates": "^19.0.0"
   }
 }
