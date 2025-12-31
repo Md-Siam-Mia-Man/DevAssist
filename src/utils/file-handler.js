@@ -72,7 +72,14 @@ function listFiles(dir, config, baseDir = dir, includedFiles = null, useGitIgnor
                 );
                 if (!isMatch) return;
              }
-             results.push(relativePath);
+             // Apply includeExt filter
+             const ext = path.extname(file);
+             if (
+                 config.includeExt.includes(ext) ||
+                 config.includeExt.includes(file)
+             ) {
+                 results.push(relativePath);
+             }
         }
       });
   }
