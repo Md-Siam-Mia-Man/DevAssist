@@ -16,37 +16,30 @@ program
   .name("devassist")
   .version(packageJson.version)
   .description(
-    kleur.cyan().bold("A toolkit to bridge developer workflows with AI.")
+    kleur.cyan().bold("A toolkit to bridge developer workflows with AI."),
   );
 
 // --- EXPORT Command ---
 program
   .command("export")
   .description(
-    "Export project structure and file contents into a single file for AI context."
+    "Export project structure and file contents into a single file for AI context.",
   )
   .option("-o, --output <file>", "Specify the output file name", "Code.txt")
   .option(
     "--only <patterns>",
-    "Comma-separated list of files/dirs to include (e.g., 'src,package.json')"
+    "Comma-separated list of files/dirs to include (e.g., 'src,package.json')",
   )
   .option(
     "--exclude <patterns>",
-    "Comma-separated list of files/dirs to exclude (e.g., 'tests,dist')"
+    "Comma-separated list of files/dirs to exclude (e.g., 'tests,dist')",
   )
   .option(
     "--framework <name>",
-    "Manually specify the project's framework (e.g., 'React', 'Django')"
+    "Manually specify the project's framework (e.g., 'React', 'Django')",
   )
-  .option(
-      "--no-structure",
-      "Do not export the project structure"
-  )
-  .option(
-      "--gitignore",
-      "Use .gitignore patterns to exclude files",
-      false
-  )
+  .option("--no-structure", "Do not export the project structure")
+  .option("--gitignore", "Use .gitignore patterns to exclude files", false)
   .action(handleExport);
 
 // --- CHUNK Command ---
@@ -61,7 +54,7 @@ program
 program
   .command("diff <file> [commit]")
   .description(
-    "Show a git-style diff of a file against a specific commit (default: HEAD)."
+    "Show a git-style diff of a file against a specific commit (default: HEAD).",
   )
   .action(handleDiff);
 
@@ -72,7 +65,7 @@ program
   .option(
     "-c, --context <number>",
     "Number of lines of code to show around the error line",
-    10
+    10,
   )
   .action(handleError);
 
@@ -80,11 +73,11 @@ program
 program
   .command("commit")
   .description(
-    "Generate a context bundle of staged git changes for an AI to write a commit message."
+    "Generate a context bundle of staged git changes for an AI to write a commit message.",
   )
   .option(
     "--full",
-    "Include full file content for more context, not just the diff."
+    "Include full file content for more context, not just the diff.",
   )
   .action(handleCommit);
 
@@ -92,7 +85,9 @@ program
 program
   .command("remove-comments [pattern]")
   .alias("rc")
-  .description("Remove all comments from files (supports any language/framework).")
+  .description(
+    "Remove all comments from files (supports any language/framework).",
+  )
   .action(handleRemoveComments);
 
 program.parse(process.argv);

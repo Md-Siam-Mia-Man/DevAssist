@@ -1,6 +1,5 @@
 const strip = require("strip-comments");
 const path = require("path");
-
 function getLanguage(ext) {
   switch (ext) {
     case "js":
@@ -16,7 +15,7 @@ function getLanguage(ext) {
     case "kt":
     case "rs":
     case "scala":
-      return "javascript"; // C-style comments
+      return "javascript";
     case "py":
     case "rb":
     case "pl":
@@ -24,7 +23,7 @@ function getLanguage(ext) {
     case "yaml":
     case "yml":
     case "dockerfile":
-      return "python"; // Hash-style comments
+      return "python";
     case "html":
     case "xml":
       return "html";
@@ -40,25 +39,16 @@ function getLanguage(ext) {
       return null;
   }
 }
-
 function formatCode(content, filePath) {
   const ext = path.extname(filePath).slice(1).toLowerCase();
   const language = getLanguage(ext);
-
   let formatted = content;
-
   if (language) {
     try {
       formatted = strip(content, { language });
-    } catch (e) {
-      // If stripping fails, keep original content
-    }
+    } catch (e) {}
   }
-
-  // Remove multiple empty lines
   formatted = formatted.replace(/^\s*[\r\n]/gm, "");
-
   return formatted.trim();
 }
-
 module.exports = { formatCode };

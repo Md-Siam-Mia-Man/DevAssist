@@ -1,6 +1,5 @@
 const fs = require("fs");
 const path = require("path");
-
 const defaultConfig = {
   includeExt: [
     ".js",
@@ -137,7 +136,6 @@ const defaultConfig = {
     "**/.terragrunt-cache/**",
   ],
 };
-
 function loadConfig() {
   const configPath = path.join(process.cwd(), ".aiconfig.json");
   if (fs.existsSync(configPath)) {
@@ -178,5 +176,4 @@ function loadConfig() {
   }
   return defaultConfig;
 }
-
 module.exports = { loadConfig };

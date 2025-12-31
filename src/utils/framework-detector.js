@@ -1,10 +1,8 @@
 const fs = require("fs");
 const path = require("path");
-
 const fileExists = (fileName) => {
   return fs.existsSync(path.join(process.cwd(), fileName));
 };
-
 const readPackageJson = () => {
   if (!fileExists("package.json")) {
     return null;
@@ -17,7 +15,6 @@ const readPackageJson = () => {
     return null;
   }
 };
-
 const FRAMEWORKS = [
   { name: "Next.js", check: () => fileExists("next.config.js") },
   { name: "Nuxt.js", check: () => fileExists("nuxt.config.js") },
@@ -65,7 +62,6 @@ const FRAMEWORKS = [
   },
   { name: "Flutter", check: () => fileExists("pubspec.yaml") },
 ];
-
 function detectFramework() {
   for (const framework of FRAMEWORKS) {
     if (framework.check()) {
@@ -74,5 +70,4 @@ function detectFramework() {
   }
   return "Unknown";
 }
-
 module.exports = { detectFramework };
