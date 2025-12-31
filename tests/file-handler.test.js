@@ -128,8 +128,6 @@ describe('file-handler', () => {
     it('listFiles should handle complex ignore patterns', () => {
         fsSync.existsSync.mockReturnValue(true);
         fsSync.readFileSync.mockReturnValue('*.log');
-        
-        // Use mockReturnValueOnce to ensure proper test isolation
         fsSync.readdirSync.mockReturnValueOnce(['app.js', 'debug.log']);
         fsSync.statSync
             .mockReturnValueOnce({ isDirectory: () => false }) // app.js
