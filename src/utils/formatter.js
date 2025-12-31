@@ -56,7 +56,7 @@ function formatCode(content, filePath) {
   }
 
   // Remove multiple empty lines
-  formatted = formatted.replace(/^\s*[\r\n]/gm, "");
+  formatted = formatted.replace(/\n\s*\n\s*\n/g, "\n\n");
 
   return formatted.trim();
 }
