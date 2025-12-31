@@ -51,7 +51,16 @@ async function handleExport(options) {
     let content = fs.readFileSync(filePath, "utf8");
 
     // Format content
-    content = formatCode(content, filePath);
+    const formattedContent = formatCode(content, filePath);
+    if (formattedContent === null || formattedContent === undefined) {
+      console.warn(
+        kleur.yellow(
+          `⚠️  Skipping formatting for ${relativePath} due to a formatting error. Original content will be used.`
+        )
+      );
+    } else {
+      content = formattedContent;
+    }
 
     collectedFiles.push({ relativePath, content });
   }, projectDir, useGitIgnore);
