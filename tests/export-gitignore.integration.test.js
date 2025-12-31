@@ -5,7 +5,7 @@ const { walkDir } = require('../src/utils/file-handler');
 describe('export command - gitignore integration test', () => {
   const tmpDir = path.join(__dirname, '.tmp-test-gitignore');
   
-  beforeAll(() => {
+  beforeEach(() => {
     // Clean up any existing test directory
     if (fs.existsSync(tmpDir)) {
       fs.rmSync(tmpDir, { recursive: true, force: true });
@@ -29,7 +29,7 @@ describe('export command - gitignore integration test', () => {
     fs.writeFileSync(gitignorePath, 'node_modules/\ndist/\n*.log\n');
   });
   
-  afterAll(() => {
+  afterEach(() => {
     // Clean up test directory
     if (fs.existsSync(tmpDir)) {
       fs.rmSync(tmpDir, { recursive: true, force: true });
