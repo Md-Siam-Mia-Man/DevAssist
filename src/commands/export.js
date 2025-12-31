@@ -31,8 +31,6 @@ async function handleExport(options) {
     ? options.exclude.split(",").map((p) => path.join(projectDir, p.trim()))
     : [];
 
-  // Use gitignore if requested (new CLI arg needed in bin/devassist.js or passed via options)
-  // Assuming options.gitignore is passed (boolean)
   const useGitIgnore = options.gitignore === true;
 
   await walkDir(projectDir, config, (filePath) => {
