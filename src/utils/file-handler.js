@@ -1,7 +1,6 @@
 const fs = require("fs").promises;
 const fsSync = require("fs");
 const path = require("path");
-const { minimatch } = require("minimatch");
 const ignore = require("ignore");
 
 function loadGitIgnore(dir) {
