@@ -38,6 +38,15 @@ program
     "--framework <name>",
     "Manually specify the project's framework (e.g., 'React', 'Django')"
   )
+  .option(
+      "--no-structure",
+      "Do not export the project structure"
+  )
+  .option(
+      "--gitignore",
+      "Use .gitignore patterns to exclude files",
+      false
+  )
   .action(handleExport);
 
 // --- CHUNK Command ---

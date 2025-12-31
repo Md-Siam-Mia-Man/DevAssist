@@ -4,6 +4,8 @@ const kleur = require("kleur");
 const { loadConfig } = require("../utils/config-loader");
 const { listFiles, walkDir } = require("../utils/file-handler");
 const { detectFramework } = require("../utils/framework-detector");
+const { formatCode } = require("../utils/formatter");
+const { generateMarkdownStructure } = require("../utils/structure-generator");
 
 async function handleExport(options) {
   console.log(kleur.blue(`\n🚀 Starting project export...`));
@@ -18,6 +20,7 @@ async function handleExport(options) {
       console.log(kleur.cyan(`ℹ️  Detected Framework: ${kleur.bold(framework)}`));
   }
 
+  // Add output file to ignore list to avoid self-inclusion
   config.ignoreFiles.push(path.basename(outputFile));
 
   const collectedFiles = [];
@@ -28,7 +31,12 @@ async function handleExport(options) {
     ? options.exclude.split(",").map((p) => path.join(projectDir, p.trim()))
     : [];
 
+  // Use gitignore if requested (new CLI arg needed in bin/devassist.js or passed via options)
+  // Assuming options.gitignore is passed (boolean)
+  const useGitIgnore = options.gitignore === true;
+
   await walkDir(projectDir, config, (filePath) => {
+    // Manual include/exclude patterns from CLI
     if (
       includePatterns &&
       !includePatterns.some((p) => filePath === p || filePath.startsWith(p + path.sep))
@@ -40,9 +48,13 @@ async function handleExport(options) {
     }
 
     const relativePath = path.relative(projectDir, filePath);
-    const content = fs.readFileSync(filePath, "utf8");
+    let content = fs.readFileSync(filePath, "utf8");
+
+    // Format content
+    content = formatCode(content, filePath);
+
     collectedFiles.push({ relativePath, content });
-  });
+  }, projectDir, useGitIgnore);
 
   let outputContent = `# Project Export: ${path.basename(projectDir)}\n\n`;
 
@@ -51,19 +63,29 @@ async function handleExport(options) {
     outputContent += `The primary detected framework for this project is: **${framework}**\n\n`;
   }
 
-  const fileList = listFiles(projectDir, config, projectDir, includePatterns);
+  // Project Structure
+  if (options.structure !== false) { // Default is true usually, unless --no-structure
+      // We need to list files again to get the full structure (walkDir only processes included files)
+      // Actually, listFiles also filters by ignore/include.
+      // If we want structure of *exported* files, we can use collectedFiles.
+      // If we want structure of *project*, we might want to list everything including those not matched by extension but not ignored?
+      // Usually "Project Structure" implies the context of the files provided.
+      // Let's use the collectedFiles for structure to be consistent with what's being exported.
 
-  outputContent += "<project_structure>\n";
-  outputContent += fileList.join("\n") + "\n";
-  outputContent += "</project_structure>\n\n";
+      const filePaths = collectedFiles.map(f => path.join(projectDir, f.relativePath));
+      const markdownStructure = generateMarkdownStructure(filePaths, projectDir);
 
-  outputContent += "<files>\n";
+      outputContent += "## Project Structure\n\n";
+      outputContent += markdownStructure + "\n\n";
+  }
+
   collectedFiles.forEach(({ relativePath, content }) => {
-    outputContent += `<file path="${relativePath}">\n`;
+    outputContent += `## File: ${relativePath}\n`;
+    const ext = path.extname(relativePath).slice(1);
+    outputContent += "```" + (ext || "") + "\n";
     outputContent += content + "\n";
-    outputContent += "</file>\n\n";
+    outputContent += "```\n\n";
   });
-  outputContent += "</files>\n";
 
   fs.writeFileSync(outputFile, outputContent);
 
