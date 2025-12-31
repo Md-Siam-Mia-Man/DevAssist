@@ -1,6 +1,7 @@
 const { listFiles, walkDir } = require('../src/utils/file-handler');
 const fsSync = require('fs');
 const fs = require('fs').promises;
+const path = require('path');
 const ignore = require('ignore');
 
 // Mock dependencies

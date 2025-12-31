@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const { handleExport } = require('../src/commands/export');
-const { walkDir } = require('../src/utils/file-handler');
+const { listFiles, walkDir } = require('../src/utils/file-handler');
 const { loadConfig } = require('../src/utils/config-loader');
 const { formatCode } = require('../src/utils/formatter');
 

@@ -31,6 +31,8 @@ async function handleExport(options) {
     ? options.exclude.split(",").map((p) => path.join(projectDir, p.trim()))
     : [];
 
+  // Use gitignore if requested (new CLI arg needed in bin/devassist.js or passed via options)
+  // Assuming options.gitignore is passed (boolean)
   const useGitIgnore = options.gitignore === true;
 
   await walkDir(projectDir, config, (filePath) => {
@@ -49,16 +51,7 @@ async function handleExport(options) {
     let content = fs.readFileSync(filePath, "utf8");
 
     // Format content
-    const formattedContent = formatCode(content, filePath);
-    if (formattedContent === null || formattedContent === undefined) {
-      console.warn(
-        kleur.yellow(
-          `⚠️  Skipping formatting for ${relativePath} due to a formatting error. Original content will be used.`
-        )
-      );
-    } else {
-      content = formattedContent;
-    }
+    content = formatCode(content, filePath);
 
     collectedFiles.push({ relativePath, content });
   }, projectDir, useGitIgnore);

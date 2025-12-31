@@ -8,7 +8,9 @@ describe('Structure Generator', () => {
             'src/utils/helper.js',
             'package.json'
         ];
-        // Use absolute paths so generateMarkdownStructure can apply path.relative(rootDir, file) correctly.
+        // Mock path.relative behavior since we pass raw strings, assuming current dir is root
+        // But the function uses path.relative(rootDir, file).
+        // Let's pass absolute paths or ensure rootDir handles it.
 
         const rootDir = '/app';
         const absoluteFiles = files.map(f => path.join(rootDir, f));
