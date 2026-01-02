@@ -83,11 +83,15 @@ program
 
 // --- REMOVE COMMENTS Command ---
 program
-  .command("remove-comments [pattern]")
+  .command("remove-comments [files...]")
   .alias("rc")
   .description(
     "Remove all comments from files (supports any language/framework).",
   )
+  .option("-i, --include <glob>", "Glob pattern to include files (comma-separated)")
+  .option("-e, --exclude <glob>", "Glob pattern to exclude files (comma-separated)")
+  .option("-d, --dry-run", "Show what files would be cleaned without modifying them")
+  .option("-p, --preserve-protected", "Preserve protected comments (beginning with !)")
   .action(handleRemoveComments);
 
 program.parse(process.argv);
