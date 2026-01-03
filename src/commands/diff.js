@@ -3,7 +3,13 @@ const fs = require("fs");
 const path = require("path");
 const kleur = require("kleur");
 const diff = require("diff");
-function handleDiff(file, commit = "HEAD") {
+const { copyToClipboard } = require("../utils/clipboard");
+
+async function handleDiff(file, commit = "HEAD", options) {
+    if (typeof commit === 'object' && commit !== null && !options) {
+        options = commit;
+        commit = "HEAD";
+    }
   const filePath = path.resolve(process.cwd(), file);
   if (!fs.existsSync(filePath)) {
     console.error(kleur.red(`❌ Error: File not found at ${filePath}`));
@@ -98,5 +104,24 @@ function handleDiff(file, commit = "HEAD") {
       kleur.bold().red(`🗑️  Removed: ${removed} line(s)`),
   );
   console.log("");
+
+  if (options && options.clipboard) {
+      // Reconstruct the output for clipboard
+      let diffOutput = `Diff: ${file} (Commit: ${commit} ↔️  Local)\n`;
+      changes.forEach((part) => {
+          const value = part.value.endsWith("\n") ? part.value : part.value + "\n";
+          if (part.added) {
+             diffOutput += value.split("\n").filter(l => l).map(l => `+ ${l}`).join("\n") + "\n";
+          } else if (part.removed) {
+             diffOutput += value.split("\n").filter(l => l).map(l => `- ${l}`).join("\n") + "\n";
+          } else {
+             const contextLines = value.split("\n").filter(l => l).slice(-3);
+             if (contextLines.length > 0) {
+                 diffOutput += contextLines.map(l => `  ${l}`).join("\n") + "\n";
+             }
+          }
+      });
+      await copyToClipboard(diffOutput);
+  }
 }
 module.exports = { handleDiff };
