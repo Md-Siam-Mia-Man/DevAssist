@@ -43,7 +43,7 @@ describe("handleRemoveComments", () => {
   it("should respect dry-run", async () => {
     await handleRemoveComments([], { dryRun: true });
     expect(fs.writeFileSync).not.toHaveBeenCalled();
-    expect(consoleLogSpy).toHaveBeenCalledWith(expect.stringContaining("Did Clean: file1.js"));
+    expect(consoleLogSpy).toHaveBeenCalledWith(expect.stringContaining("Would clean: file1.js"));
   });
 
   it("should respect include pattern", async () => {
