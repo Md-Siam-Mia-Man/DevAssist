@@ -19,6 +19,17 @@ function handleDiff(file, commit = "HEAD") {
       );
       process.exit(1);
     }
+
+    try {
+      execSync("git rev-parse --is-inside-work-tree", { stdio: "ignore" });
+    } catch (e) {
+      console.error(
+        kleur.red("❌ Error: Not a git repository (or any of the parent directories)."),
+      );
+      process.exit(1);
+    }
+
+    console.log(kleur.dim(`🔍 Fetching version from commit: ${commit}...`));
     const gitFile = file.replace(/\\/g, "/");
     oldContent = execSync(`git show ${commit}:"${gitFile}"`, {
       encoding: "utf8",

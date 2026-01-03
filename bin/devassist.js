@@ -23,7 +23,7 @@ program
 program
   .command("export")
   .description(
-    "Export project structure and file contents into a single file for AI context.",
+    "📦 Export project structure and file contents into a single file for AI context.",
   )
   .option("-o, --output <file>", "Specify the output file name", "Code.txt")
   .option(
@@ -45,7 +45,7 @@ program
 // --- CHUNK Command ---
 program
   .command("chunk <file>")
-  .description("Split a large file into smaller, AI-friendly chunks.")
+  .description("🔪 Split a large file into smaller, AI-friendly chunks.")
   .option("-l, --max-lines <number>", "Maximum number of lines per chunk", 150)
   .option("-o, --output <file>", "Specify an output file to save the chunks")
   .action(handleChunk);
@@ -54,14 +54,14 @@ program
 program
   .command("diff <file> [commit]")
   .description(
-    "Show a git-style diff of a file against a specific commit (default: HEAD).",
+    "⚡ Show a git-style diff of a file against a specific commit (default: HEAD).",
   )
   .action(handleDiff);
 
 // --- ERROR Command ---
 program
   .command("error <logfile>")
-  .description("Extract an error and its code context from a log file.")
+  .description("🐛 Extract an error and its code context from a log file.")
   .option(
     "-c, --context <number>",
     "Number of lines of code to show around the error line",
@@ -73,7 +73,7 @@ program
 program
   .command("commit")
   .description(
-    "Generate a context bundle of staged git changes for an AI to write a commit message.",
+    "📝 Generate a context bundle of staged git changes for an AI to write a commit message.",
   )
   .option(
     "--full",
@@ -86,7 +86,7 @@ program
   .command("remove-comments [files...]")
   .alias("rc")
   .description(
-    "Remove all comments from files (supports any language/framework).",
+    "🧹 Remove all comments from files (supports any language/framework).",
   )
   .option("-i, --include <glob>", "Glob pattern to include files (comma-separated)")
   .option("-e, --exclude <glob>", "Glob pattern to exclude files (comma-separated)")

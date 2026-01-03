@@ -12,10 +12,15 @@ async function handleExport(options) {
   const config = loadConfig();
   const projectDir = process.cwd();
   const outputFile = path.resolve(projectDir, options.output);
+
+  console.log(kleur.cyan(`🔍 Detecting framework...`));
   const framework = options.framework || detectFramework();
   if (framework !== "Unknown") {
-    console.log(kleur.cyan(`ℹ️  Detected Framework: ${kleur.bold(framework)}`));
+    console.log(kleur.cyan(`✨ Detected Framework: ${kleur.bold(framework)}`));
+  } else {
+    console.log(kleur.gray(`❔ Framework not detected (using generic settings)`));
   }
+
   config.ignoreFiles.push(path.basename(outputFile));
   const collectedFiles = [];
   let includePatterns = options.only
@@ -25,6 +30,8 @@ async function handleExport(options) {
     ? options.exclude.split(",").map((p) => path.join(projectDir, p.trim()))
     : [];
   const useGitIgnore = options.gitignore === true;
+  console.log(kleur.blue(`📂 Scanning files...`));
+
   await walkDir(
     projectDir,
     config,
@@ -52,6 +59,9 @@ async function handleExport(options) {
     projectDir,
     useGitIgnore,
   );
+
+  console.log(kleur.blue(`📦 processing ${collectedFiles.length} files...`));
+
   let outputContent = `# Project Export: ${path.basename(projectDir)}\n\n`;
   if (framework !== "Unknown") {
     outputContent += `## Project Framework\n\n`;

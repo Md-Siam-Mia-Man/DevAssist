@@ -19,6 +19,7 @@ jest.mock("kleur", () => {
     dim: (s) => s,
     green: (s) => s,
     cyan: (s) => s,
+    gray: (s) => s,
     bold: jest.fn().mockImplementation((s) => {
       if (s) return s;
       return { underline: (s) => s };

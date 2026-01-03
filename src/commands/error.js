@@ -23,6 +23,10 @@ function handleError(logfile, options) {
   const [, errorFile, errorLine] = match;
   const errorLineNum = parseInt(errorLine, 10);
   const contextLines = parseInt(options.context, 10);
+
+  console.log(kleur.blue(`🕵️  Analyzing stack trace...`));
+  console.log(kleur.dim(`📍 Located error at ${errorFile}:${errorLine}`));
+
   let codeFilePath = path.resolve(errorFile);
   if (!fs.existsSync(codeFilePath)) {
     codeFilePath = path.resolve(process.cwd(), errorFile);
