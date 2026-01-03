@@ -3,7 +3,9 @@ const fs = require("fs");
 const path = require("path");
 const kleur = require("kleur");
 const diff = require("diff");
-function handleDiff(file, commit = "HEAD") {
+const { copyToClipboard } = require("../utils/clipboard");
+
+async function handleDiff(file, commit = "HEAD", options) {
   const filePath = path.resolve(process.cwd(), file);
   if (!fs.existsSync(filePath)) {
     console.error(kleur.red(`❌ Error: File not found at ${filePath}`));
@@ -19,6 +21,17 @@ function handleDiff(file, commit = "HEAD") {
       );
       process.exit(1);
     }
+
+    try {
+      execSync("git rev-parse --is-inside-work-tree", { stdio: "ignore" });
+    } catch (e) {
+      console.error(
+        kleur.red("❌ Error: Not a git repository (or any of the parent directories)."),
+      );
+      process.exit(1);
+    }
+
+    console.log(kleur.dim(`🔍 Fetching version from commit: ${commit}...`));
     const gitFile = file.replace(/\\/g, "/");
     oldContent = execSync(`git show ${commit}:"${gitFile}"`, {
       encoding: "utf8",
@@ -44,39 +57,37 @@ function handleDiff(file, commit = "HEAD") {
     kleur.bold().blue(`\n⚡ Diff: ${file} (Commit: ${commit} ↔️  Local)\n`),
   );
   console.log(kleur.dim("─".repeat(50)));
+  let diffOutputText = "";
+
   changes.forEach((part) => {
     const value = part.value.endsWith("\n") ? part.value : part.value + "\n";
     if (part.added) {
       added += part.count;
-      process.stdout.write(
-        kleur.green(
-          value
+      const addedText = value
             .split("\n")
             .filter((l) => l)
             .map((l) => `│ ➕ ${l}`)
-            .join("\n") + "\n",
-        ),
-      );
+            .join("\n") + "\n";
+      process.stdout.write(kleur.green(addedText));
+      diffOutputText += addedText;
     } else if (part.removed) {
       removed += part.count;
-      process.stdout.write(
-        kleur.red(
-          value
+      const removedText = value
             .split("\n")
             .filter((l) => l)
             .map((l) => `│ ➖ ${l}`)
-            .join("\n") + "\n",
-        ),
-      );
+            .join("\n") + "\n";
+      process.stdout.write(kleur.red(removedText));
+      diffOutputText += removedText;
     } else {
       const contextLines = value
         .split("\n")
         .filter((l) => l)
         .slice(-3);
       if (contextLines.length > 0) {
-        process.stdout.write(
-          kleur.dim(contextLines.map((l) => `│    ${l}`).join("\n") + "\n"),
-        );
+        const dimText = contextLines.map((l) => `│    ${l}`).join("\n") + "\n";
+        process.stdout.write(kleur.dim(dimText));
+        diffOutputText += dimText;
       }
     }
   });
@@ -86,6 +97,11 @@ function handleDiff(file, commit = "HEAD") {
       "  " +
       kleur.bold().red(`🗑️  Removed: ${removed} line(s)`),
   );
+
+  if (options && options.clipboard) {
+      await copyToClipboard(diffOutputText);
+  }
+
   console.log("");
 }
 module.exports = { handleDiff };

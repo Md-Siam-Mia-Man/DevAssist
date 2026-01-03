@@ -12,6 +12,9 @@ function handleCommit(options) {
       );
       process.exit(1);
     }
+
+    console.log(kleur.blue(`🔍 Checking staged changes...`));
+
     const diffOutput = execSync("git diff --staged --name-only", {
       encoding: "utf8",
     });
@@ -23,6 +26,9 @@ function handleCommit(options) {
       );
       return;
     }
+
+    console.log(kleur.blue(`📝 Generating context for ${diffOutput.trim().split('\n').length} files...`));
+
     let context =
       "# CONTEXT: Generate a conventional commit message for the following changes.\n\n";
     if (options.full) {

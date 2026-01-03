@@ -1,7 +1,9 @@
 const fs = require("fs");
 const path = require("path");
 const kleur = require("kleur");
-function handleError(logfile, options) {
+const { copyToClipboard } = require("../utils/clipboard");
+
+async function handleError(logfile, options) {
   const logPath = path.resolve(process.cwd(), logfile);
   if (!fs.existsSync(logPath)) {
     console.error(kleur.red(`❌ Error: Log file not found at ${logPath}`));
@@ -23,6 +25,10 @@ function handleError(logfile, options) {
   const [, errorFile, errorLine] = match;
   const errorLineNum = parseInt(errorLine, 10);
   const contextLines = parseInt(options.context, 10);
+
+  console.log(kleur.blue(`🕵️  Analyzing stack trace...`));
+  console.log(kleur.dim(`📍 Located error at ${errorFile}:${errorLine}`));
+
   let codeFilePath = path.resolve(errorFile);
   if (!fs.existsSync(codeFilePath)) {
     codeFilePath = path.resolve(process.cwd(), errorFile);
@@ -69,5 +75,9 @@ function handleError(logfile, options) {
       "\n📋 The context above is ready to be copied to your AI assistant.",
     ),
   );
+
+  if (options.clipboard) {
+    await copyToClipboard(output);
+  }
 }
 module.exports = { handleError };

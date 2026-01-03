@@ -17,6 +17,8 @@ async function handleRemoveComments(files, options) {
   const config = loadConfig();
   const projectDir = process.cwd();
 
+  console.log(kleur.blue(`🔍 Scanning directory...`));
+
   let includePatterns = [];
 
   if (files && files.length > 0) {
@@ -65,11 +67,11 @@ async function handleRemoveComments(files, options) {
         if (!options.dryRun) {
             fs.writeFileSync(filePath, formatted, "utf8");
             console.log(
-                kleur.green(`✔ Cleaned: ${relPath}`),
+                kleur.green(`✨ Cleaned: ${relPath}`),
             );
         } else {
              console.log(
-                kleur.yellow(`Did Clean: ${relPath}`),
+                kleur.yellow(`🔍 Would clean: ${relPath}`),
             );
         }
         modifiedCount++;
@@ -78,7 +80,7 @@ async function handleRemoveComments(files, options) {
     } catch (err) {
       console.error(
         kleur.red(
-          `✖ Error processing ${relPath}: ${err.message}`,
+          `❌ Error processing ${relPath}: ${err.message}`,
         ),
       );
     }
