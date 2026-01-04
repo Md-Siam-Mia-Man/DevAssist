@@ -9,6 +9,7 @@ const { handleDiff } = require("../src/commands/diff");
 const { handleError } = require("../src/commands/error");
 const { handleCommit } = require("../src/commands/commit");
 const { handleRemoveComments } = require("../src/commands/remove-comments");
+const { handleWatch } = require("../src/commands/watch");
 
 const program = new Command();
 
@@ -40,6 +41,12 @@ program
   )
   .option("--no-structure", "Do not export the project structure")
   .option("--gitignore", "Use .gitignore patterns to exclude files", false)
+  .option("--tokens", "Estimate the token count of the output")
+  .option("--summary", "Export summary (function signatures/docstrings) only")
+  .option("-c, --clipboard", "Copy the output to the system clipboard")
+  .option("--interactive", "Run in interactive wizard mode")
+  .option("--template <name>", "Wrap export in a prompt template (e.g., 'refactor', 'test')")
+  .option("--repo <url>", "Export a remote git repository")
   .action(handleExport);
 
 // --- CHUNK Command ---
@@ -56,6 +63,7 @@ program
   .description(
     "⚡ Show a git-style diff of a file against a specific commit (default: HEAD).",
   )
+  .option("-c, --clipboard", "Copy the output to the system clipboard")
   .action(handleDiff);
 
 // --- ERROR Command ---
@@ -63,10 +71,11 @@ program
   .command("error <logfile>")
   .description("🐛 Extract an error and its code context from a log file.")
   .option(
-    "-c, --context <number>",
+    "--context <number>",
     "Number of lines of code to show around the error line",
     10,
   )
+  .option("-c, --clipboard", "Copy the output to the system clipboard")
   .action(handleError);
 
 // --- COMMIT Command ---
@@ -93,5 +102,24 @@ program
   .option("-d, --dry-run", "Show what files would be cleaned without modifying them")
   .option("-p, --preserve-protected", "Preserve protected comments (beginning with !)")
   .action(handleRemoveComments);
+
+// --- WATCH Command ---
+program
+  .command("watch")
+  .description(
+    "👀 Watch for file changes and auto-update the exported context file.",
+  )
+  .option("-o, --output <file>", "Specify the output file name", "context.md")
+  .option(
+    "--only <patterns>",
+    "Comma-separated list of files/dirs to include",
+  )
+  .option(
+    "--exclude <patterns>",
+    "Comma-separated list of files/dirs to exclude",
+  )
+  .option("--no-structure", "Do not export the project structure")
+  .option("--gitignore", "Use .gitignore patterns to exclude files", false)
+  .action(handleWatch);
 
 program.parse(process.argv);

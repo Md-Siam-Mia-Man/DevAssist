@@ -6,7 +6,96 @@ const { listFiles, walkDir } = require("../utils/file-handler");
 const { detectFramework } = require("../utils/framework-detector");
 const { formatCode } = require("../utils/formatter");
 const { generateMarkdownStructure } = require("../utils/structure-generator");
+const { countTokens } = require("../utils/token-counter");
+const { copyToClipboard } = require("../utils/clipboard");
+const { scanAndRedact } = require("../utils/secret-scanner");
+const { summarizeCode } = require("../utils/summarizer");
+const inquirer = require("inquirer");
+const { execSync } = require("child_process");
+
 async function handleExport(options) {
+  // --- Remote Repository Export ---
+  if (options.repo) {
+    // Validate Repo URL
+    if (!/^https?:\/\/github\.com\/[\w-]+\/[\w-.]+$/.test(options.repo)) {
+        console.error(kleur.red("❌ Invalid GitHub Repository URL."));
+        return;
+    }
+
+    console.log(kleur.blue(`\n🚀 Cloning remote repository: ${options.repo}...`));
+    const tempDir = path.join(process.cwd(), ".devassist-temp-repo");
+    if (fs.existsSync(tempDir)) {
+        fs.rmSync(tempDir, { recursive: true, force: true });
+    }
+    try {
+        execSync(`git clone ${options.repo} ${tempDir} --depth 1`, { stdio: "inherit" });
+        const originalCwd = process.cwd();
+        process.chdir(tempDir);
+        // Call recursively without repo option to avoid infinite loop
+        // We need to adjust output path to be absolute or relative to original Cwd
+        let output = options.output;
+        if (!path.isAbsolute(output)) {
+             output = path.join(originalCwd, output);
+        }
+
+        await handleExport({ ...options, repo: undefined, output });
+
+        process.chdir(originalCwd);
+        fs.rmSync(tempDir, { recursive: true, force: true });
+        return; // Exit after processing remote repo
+    } catch (error) {
+        console.error(kleur.red("❌ Failed to clone or process remote repository."));
+        console.error(error);
+        if (fs.existsSync(tempDir)) {
+             fs.rmSync(tempDir, { recursive: true, force: true });
+        }
+        return;
+    }
+  }
+
+  // --- Interactive Mode ---
+  if (options.interactive) {
+      console.log(kleur.blue(`\n🔮 Interactive Mode`));
+      // Basic implementation: ask for output file and maybe exclusions
+      // A full file tree selection is complex for inquirer, so we'll stick to basic options for now.
+      const answers = await inquirer.prompt([
+          {
+              type: "input",
+              name: "output",
+              message: "Output filename:",
+              default: options.output || "Code.txt"
+          },
+          {
+              type: "input",
+              name: "only",
+              message: "Include only (comma separated patterns, optional):",
+              default: options.only
+          },
+          {
+              type: "input",
+              name: "exclude",
+              message: "Exclude patterns (comma separated, optional):",
+              default: options.exclude
+          },
+          {
+              type: "confirm",
+              name: "clipboard",
+              message: "Copy to clipboard?",
+              default: false
+          },
+          {
+              type: "confirm",
+              name: "tokens",
+              message: "Calculate tokens?",
+              default: true
+          }
+      ]);
+
+      // Merge answers into options
+      options = { ...options, ...answers };
+      // interactive mode handled, proceed with normal flow
+  }
+
   console.log(kleur.blue(`\n🚀 Starting project export...`));
   console.log(kleur.dim("─".repeat(40)));
   const config = loadConfig();
@@ -53,7 +142,18 @@ async function handleExport(options) {
       }
       const relativePath = path.relative(projectDir, filePath);
       let content = fs.readFileSync(filePath, "utf8");
-      content = formatCode(content, filePath);
+
+      // Secrets Redaction
+      content = scanAndRedact(content, relativePath, true);
+
+      // Summarization
+      if (options.summary) {
+          const ext = path.extname(filePath);
+          content = summarizeCode(content, ext);
+      } else {
+          content = formatCode(content, filePath);
+      }
+
       collectedFiles.push({ relativePath, content });
     },
     projectDir,
@@ -62,7 +162,20 @@ async function handleExport(options) {
 
   console.log(kleur.blue(`📦 processing ${collectedFiles.length} files...`));
 
-  let outputContent = `# Project Export: ${path.basename(projectDir)}\n\n`;
+  let outputContent = "";
+
+  // Template Support
+  if (options.template) {
+      if (options.template === "refactor") {
+          outputContent += "Please refactor the following code to improve quality and performance:\n\n";
+      } else if (options.template === "test") {
+          outputContent += "Write Jest unit tests for the following code, covering edge cases:\n\n";
+      } else {
+          outputContent += `${options.template}\n\n`;
+      }
+  }
+
+  outputContent += `# Project Export: ${path.basename(projectDir)}\n\n`;
   if (framework !== "Unknown") {
     outputContent += `## Project Framework\n\n`;
     outputContent += `The primary detected framework for this project is: **${framework}**\n\n`;
@@ -82,11 +195,25 @@ async function handleExport(options) {
     outputContent += content + "\n";
     outputContent += "```\n\n";
   });
+
   fs.writeFileSync(outputFile, outputContent);
+
   console.log(kleur.dim("─".repeat(40)));
   console.log(kleur.green(`✅ Project exported successfully!`));
   console.log(`📁 Output: ${kleur.bold().underline(outputFile)}`);
   console.log(`📊 Stats:  ${collectedFiles.length} files included.`);
+
+  // Token Counting
+  if (options.tokens) {
+      const count = countTokens(outputContent);
+      console.log(kleur.magenta(`🧠 Estimated Tokens: ${count}`));
+  }
+
+  // Clipboard
+  if (options.clipboard) {
+      await copyToClipboard(outputContent);
+  }
+
   console.log("");
 }
 module.exports = { handleExport };
