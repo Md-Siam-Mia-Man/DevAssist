@@ -21,6 +21,10 @@ describe("handleRemoveComments", () => {
     consoleErrorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
     fsWriteSpy = fs.writeFileSync;
     fs.readFileSync.mockReturnValue("some content");
+    // Mock existsSync to always return true for tests unless we want to test the missing case
+    // We need to support path.resolve in the implementation which calls fs.existsSync
+    fs.existsSync = jest.fn().mockReturnValue(true);
+
     formatCode.mockReturnValue("cleaned content");
     walkDir.mockImplementation(async (dir, config, callback) => {
       callback(path.join(process.cwd(), "file1.js"));
