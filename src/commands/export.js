@@ -112,12 +112,38 @@ async function handleExport(options) {
 
   config.ignoreFiles.push(path.basename(outputFile));
   const collectedFiles = [];
-  let includePatterns = options.only
-    ? options.only.split(",").map((p) => path.join(projectDir, p.trim()))
-    : null;
-  let excludePatterns = options.exclude
-    ? options.exclude.split(",").map((p) => path.join(projectDir, p.trim()))
-    : [];
+  let includePatterns = null;
+
+  if (options.only) {
+    includePatterns = [];
+    const rawPatterns = options.only.split(",");
+    for (const p of rawPatterns) {
+      const trimmed = p.trim();
+      const absPath = path.join(projectDir, trimmed);
+      if (fs.existsSync(absPath)) {
+        includePatterns.push(absPath);
+      } else {
+        console.log(
+          kleur.yellow(`⚠️  Warning: Included path not found: ${trimmed} (Ignoring)`),
+        );
+      }
+    }
+  }
+
+  let excludePatterns = [];
+  if (options.exclude) {
+    const rawPatterns = options.exclude.split(",");
+    for (const p of rawPatterns) {
+       const trimmed = p.trim();
+       // For exclude, we don't necessarily need to check existence,
+       // but strictly speaking, if it doesn't exist, excluding it is redundant.
+       // However, often excludes are patterns (globs) in other tools.
+       // Here it seems they are paths. Let's resolve them.
+       // The original code resolved them to absolute paths.
+       excludePatterns.push(path.join(projectDir, trimmed));
+    }
+  }
+
   const useGitIgnore = options.gitignore === true;
   console.log(kleur.blue(`📂 Scanning files...`));
 

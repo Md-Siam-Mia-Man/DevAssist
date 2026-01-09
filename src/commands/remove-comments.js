@@ -29,6 +29,19 @@ async function handleRemoveComments(files, options) {
       options.include.split(',').forEach(p => includePatterns.push(p.trim()));
   }
 
+  // Validate existence of included patterns if they look like file paths
+  const globHasMagic = (pattern) => {
+    return pattern.includes("*") || pattern.includes("?") || pattern.includes("[") || pattern.includes("{") || pattern.includes("!");
+  };
+
+  includePatterns = includePatterns.filter(p => {
+       if (globHasMagic(p)) return true; // Keep globs
+       const absPath = path.resolve(projectDir, p);
+       if (fs.existsSync(absPath)) return true;
+       console.log(kleur.yellow(`⚠️  Warning: Included path not found: ${p} (Ignoring)`));
+       return false;
+  });
+
   const excludePatterns = options.exclude ? options.exclude.split(',').map(p => p.trim()) : [];
 
   let processedCount = 0;
