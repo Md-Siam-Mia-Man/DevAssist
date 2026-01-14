@@ -3,8 +3,14 @@ const kleur = require("kleur");
 // Common patterns for secrets
 const SECRET_PATTERNS = [
   { name: "AWS Access Key", regex: /AKIA[0-9A-Z]{16}/g },
-  { name: "AWS Secret Key", regex: /(aws|amazon).*?_?key.*?['"]?[=:].*?['"]?[a-zA-Z0-9\/+=]{40}/gi },
-  { name: "Generic API Key", regex: /api[_-]?key.*?['"]?[:=].*?['"]?[a-zA-Z0-9\-_]{20,}/gi },
+  {
+    name: "AWS Secret Key",
+    regex: /(aws|amazon).*?_?key.*?['"]?[=:].*?['"]?[a-zA-Z0-9\/+=]{40}/gi,
+  },
+  {
+    name: "Generic API Key",
+    regex: /api[_-]?key.*?['"]?[:=].*?['"]?[a-zA-Z0-9\-_]{20,}/gi,
+  },
   { name: "Private Key", regex: /-----BEGIN PRIVATE KEY-----/g },
   { name: "GitHub Token", regex: /gh[pousr]_[a-zA-Z0-9]{36,}/g },
   { name: "Slack Token", regex: /xox[baprs]-([0-9a-zA-Z]{10,48})/g },
@@ -27,12 +33,17 @@ function scanAndRedact(content, filepath, redact = true) {
       foundSecrets = true;
       if (redact) {
         console.warn(
-          kleur.yellow(`⚠ Potential ${pattern.name} found in ${filepath}. Redacting...`)
+          kleur.yellow(
+            `⚠ Potential ${pattern.name} found in ${filepath}. Redacting...`,
+          ),
         );
-        modifiedContent = modifiedContent.replace(pattern.regex, "[REDACTED SECRET]");
+        modifiedContent = modifiedContent.replace(
+          pattern.regex,
+          "[REDACTED SECRET]",
+        );
       } else {
-         console.warn(
-          kleur.yellow(`⚠ Potential ${pattern.name} found in ${filepath}.`)
+        console.warn(
+          kleur.yellow(`⚠ Potential ${pattern.name} found in ${filepath}.`),
         );
       }
     }

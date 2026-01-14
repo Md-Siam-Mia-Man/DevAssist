@@ -18,82 +18,88 @@ async function handleExport(options) {
   if (options.repo) {
     // Validate Repo URL
     if (!/^https?:\/\/github\.com\/[\w-]+\/[\w-.]+$/.test(options.repo)) {
-        console.error(kleur.red("❌ Invalid GitHub Repository URL."));
-        return;
+      console.error(kleur.red("❌ Invalid GitHub Repository URL."));
+      return;
     }
 
-    console.log(kleur.blue(`\n🚀 Cloning remote repository: ${options.repo}...`));
+    console.log(
+      kleur.blue(`\n🚀 Cloning remote repository: ${options.repo}...`),
+    );
     const tempDir = path.join(process.cwd(), ".devassist-temp-repo");
     if (fs.existsSync(tempDir)) {
-        fs.rmSync(tempDir, { recursive: true, force: true });
+      fs.rmSync(tempDir, { recursive: true, force: true });
     }
     try {
-        execSync(`git clone ${options.repo} ${tempDir} --depth 1`, { stdio: "inherit" });
-        const originalCwd = process.cwd();
-        process.chdir(tempDir);
-        // Call recursively without repo option to avoid infinite loop
-        // We need to adjust output path to be absolute or relative to original Cwd
-        let output = options.output;
-        if (!path.isAbsolute(output)) {
-             output = path.join(originalCwd, output);
-        }
+      execSync(`git clone ${options.repo} ${tempDir} --depth 1`, {
+        stdio: "inherit",
+      });
+      const originalCwd = process.cwd();
+      process.chdir(tempDir);
+      // Call recursively without repo option to avoid infinite loop
+      // We need to adjust output path to be absolute or relative to original Cwd
+      let output = options.output;
+      if (!path.isAbsolute(output)) {
+        output = path.join(originalCwd, output);
+      }
 
-        await handleExport({ ...options, repo: undefined, output });
+      await handleExport({ ...options, repo: undefined, output });
 
-        process.chdir(originalCwd);
-        fs.rmSync(tempDir, { recursive: true, force: true });
-        return; // Exit after processing remote repo
+      process.chdir(originalCwd);
+      fs.rmSync(tempDir, { recursive: true, force: true });
+      return; // Exit after processing remote repo
     } catch (error) {
-        console.error(kleur.red("❌ Failed to clone or process remote repository."));
-        console.error(error);
-        if (fs.existsSync(tempDir)) {
-             fs.rmSync(tempDir, { recursive: true, force: true });
-        }
-        return;
+      console.error(
+        kleur.red("❌ Failed to clone or process remote repository."),
+      );
+      console.error(error);
+      if (fs.existsSync(tempDir)) {
+        fs.rmSync(tempDir, { recursive: true, force: true });
+      }
+      return;
     }
   }
 
   // --- Interactive Mode ---
   if (options.interactive) {
-      console.log(kleur.blue(`\n🔮 Interactive Mode`));
-      // Basic implementation: ask for output file and maybe exclusions
-      // A full file tree selection is complex for inquirer, so we'll stick to basic options for now.
-      const answers = await inquirer.prompt([
-          {
-              type: "input",
-              name: "output",
-              message: "Output filename:",
-              default: options.output || "Code.txt"
-          },
-          {
-              type: "input",
-              name: "only",
-              message: "Include only (comma separated patterns, optional):",
-              default: options.only
-          },
-          {
-              type: "input",
-              name: "exclude",
-              message: "Exclude patterns (comma separated, optional):",
-              default: options.exclude
-          },
-          {
-              type: "confirm",
-              name: "clipboard",
-              message: "Copy to clipboard?",
-              default: false
-          },
-          {
-              type: "confirm",
-              name: "tokens",
-              message: "Calculate tokens?",
-              default: true
-          }
-      ]);
+    console.log(kleur.blue(`\n🔮 Interactive Mode`));
+    // Basic implementation: ask for output file and maybe exclusions
+    // A full file tree selection is complex for inquirer, so we'll stick to basic options for now.
+    const answers = await inquirer.prompt([
+      {
+        type: "input",
+        name: "output",
+        message: "Output filename:",
+        default: options.output || "Code.txt",
+      },
+      {
+        type: "input",
+        name: "only",
+        message: "Include only (comma separated patterns, optional):",
+        default: options.only,
+      },
+      {
+        type: "input",
+        name: "exclude",
+        message: "Exclude patterns (comma separated, optional):",
+        default: options.exclude,
+      },
+      {
+        type: "confirm",
+        name: "clipboard",
+        message: "Copy to clipboard?",
+        default: false,
+      },
+      {
+        type: "confirm",
+        name: "tokens",
+        message: "Calculate tokens?",
+        default: true,
+      },
+    ]);
 
-      // Merge answers into options
-      options = { ...options, ...answers };
-      // interactive mode handled, proceed with normal flow
+    // Merge answers into options
+    options = { ...options, ...answers };
+    // interactive mode handled, proceed with normal flow
   }
 
   console.log(kleur.blue(`\n🚀 Starting project export...`));
@@ -107,7 +113,9 @@ async function handleExport(options) {
   if (framework !== "Unknown") {
     console.log(kleur.cyan(`✨ Detected Framework: ${kleur.bold(framework)}`));
   } else {
-    console.log(kleur.gray(`❔ Framework not detected (using generic settings)`));
+    console.log(
+      kleur.gray(`❔ Framework not detected (using generic settings)`),
+    );
   }
 
   config.ignoreFiles.push(path.basename(outputFile));
@@ -124,7 +132,9 @@ async function handleExport(options) {
         includePatterns.push(absPath);
       } else {
         console.log(
-          kleur.yellow(`⚠️  Warning: Included path not found: ${trimmed} (Ignoring)`),
+          kleur.yellow(
+            `⚠️  Warning: Included path not found: ${trimmed} (Ignoring)`,
+          ),
         );
       }
     }
@@ -134,13 +144,13 @@ async function handleExport(options) {
   if (options.exclude) {
     const rawPatterns = options.exclude.split(",");
     for (const p of rawPatterns) {
-       const trimmed = p.trim();
-       // For exclude, we don't necessarily need to check existence,
-       // but strictly speaking, if it doesn't exist, excluding it is redundant.
-       // However, often excludes are patterns (globs) in other tools.
-       // Here it seems they are paths. Let's resolve them.
-       // The original code resolved them to absolute paths.
-       excludePatterns.push(path.join(projectDir, trimmed));
+      const trimmed = p.trim();
+      // For exclude, we don't necessarily need to check existence,
+      // but strictly speaking, if it doesn't exist, excluding it is redundant.
+      // However, often excludes are patterns (globs) in other tools.
+      // Here it seems they are paths. Let's resolve them.
+      // The original code resolved them to absolute paths.
+      excludePatterns.push(path.join(projectDir, trimmed));
     }
   }
 
@@ -174,10 +184,10 @@ async function handleExport(options) {
 
       // Summarization
       if (options.summary) {
-          const ext = path.extname(filePath);
-          content = summarizeCode(content, ext);
+        const ext = path.extname(filePath);
+        content = summarizeCode(content, ext);
       } else {
-          content = formatCode(content, filePath);
+        content = formatCode(content, filePath);
       }
 
       collectedFiles.push({ relativePath, content });
@@ -192,13 +202,15 @@ async function handleExport(options) {
 
   // Template Support
   if (options.template) {
-      if (options.template === "refactor") {
-          outputContent += "Please refactor the following code to improve quality and performance:\n\n";
-      } else if (options.template === "test") {
-          outputContent += "Write Jest unit tests for the following code, covering edge cases:\n\n";
-      } else {
-          outputContent += `${options.template}\n\n`;
-      }
+    if (options.template === "refactor") {
+      outputContent +=
+        "Please refactor the following code to improve quality and performance:\n\n";
+    } else if (options.template === "test") {
+      outputContent +=
+        "Write Jest unit tests for the following code, covering edge cases:\n\n";
+    } else {
+      outputContent += `${options.template}\n\n`;
+    }
   }
 
   outputContent += `# Project Export: ${path.basename(projectDir)}\n\n`;
@@ -231,13 +243,13 @@ async function handleExport(options) {
 
   // Token Counting
   if (options.tokens) {
-      const count = countTokens(outputContent);
-      console.log(kleur.magenta(`🧠 Estimated Tokens: ${count}`));
+    const count = countTokens(outputContent);
+    console.log(kleur.magenta(`🧠 Estimated Tokens: ${count}`));
   }
 
   // Clipboard
   if (options.clipboard) {
-      await copyToClipboard(outputContent);
+    await copyToClipboard(outputContent);
   }
 
   console.log("");

@@ -22,27 +22,37 @@ async function handleRemoveComments(files, options) {
   let includePatterns = [];
 
   if (files && files.length > 0) {
-      files.forEach(f => includePatterns.push(f));
+    files.forEach((f) => includePatterns.push(f));
   }
 
   if (options.include) {
-      options.include.split(',').forEach(p => includePatterns.push(p.trim()));
+    options.include.split(",").forEach((p) => includePatterns.push(p.trim()));
   }
 
   // Validate existence of included patterns if they look like file paths
   const globHasMagic = (pattern) => {
-    return pattern.includes("*") || pattern.includes("?") || pattern.includes("[") || pattern.includes("{") || pattern.includes("!");
+    return (
+      pattern.includes("*") ||
+      pattern.includes("?") ||
+      pattern.includes("[") ||
+      pattern.includes("{") ||
+      pattern.includes("!")
+    );
   };
 
-  includePatterns = includePatterns.filter(p => {
-       if (globHasMagic(p)) return true; // Keep globs
-       const absPath = path.resolve(projectDir, p);
-       if (fs.existsSync(absPath)) return true;
-       console.log(kleur.yellow(`⚠️  Warning: Included path not found: ${p} (Ignoring)`));
-       return false;
+  includePatterns = includePatterns.filter((p) => {
+    if (globHasMagic(p)) return true; // Keep globs
+    const absPath = path.resolve(projectDir, p);
+    if (fs.existsSync(absPath)) return true;
+    console.log(
+      kleur.yellow(`⚠️  Warning: Included path not found: ${p} (Ignoring)`),
+    );
+    return false;
   });
 
-  const excludePatterns = options.exclude ? options.exclude.split(',').map(p => p.trim()) : [];
+  const excludePatterns = options.exclude
+    ? options.exclude.split(",").map((p) => p.trim())
+    : [];
 
   let processedCount = 0;
   let modifiedCount = 0;
@@ -52,18 +62,34 @@ async function handleRemoveComments(files, options) {
 
     if (includePatterns.length > 0) {
       const isMatch = includePatterns.some((p) => {
-        return minimatch(relPath, p) || relPath.startsWith(p + path.sep) || relPath === p;
+        return (
+          minimatch(relPath, p) ||
+          relPath.startsWith(p + path.sep) ||
+          relPath === p
+        );
       });
       if (!isMatch) return;
     }
 
     if (excludePatterns.length > 0) {
-        const isExcluded = excludePatterns.some(p => minimatch(relPath, p));
-        if (isExcluded) return;
+      const isExcluded = excludePatterns.some((p) => minimatch(relPath, p));
+      if (isExcluded) return;
     }
 
     const ext = path.extname(filePath).slice(1).toLowerCase();
-    if (["json", "md", "txt", "lock", "png", "jpg", "jpeg", "gif", "ico"].includes(ext)) {
+    if (
+      [
+        "json",
+        "md",
+        "txt",
+        "lock",
+        "png",
+        "jpg",
+        "jpeg",
+        "gif",
+        "ico",
+      ].includes(ext)
+    ) {
       return;
     }
 
@@ -71,30 +97,24 @@ async function handleRemoveComments(files, options) {
       const content = fs.readFileSync(filePath, "utf8");
 
       const formatOptions = {
-          preserveProtected: options.preserveProtected
+        preserveProtected: options.preserveProtected,
       };
 
       const formatted = formatCode(content, filePath, formatOptions);
 
       if (content !== formatted) {
         if (!options.dryRun) {
-            fs.writeFileSync(filePath, formatted, "utf8");
-            console.log(
-                kleur.green(`✨ Cleaned: ${relPath}`),
-            );
+          fs.writeFileSync(filePath, formatted, "utf8");
+          console.log(kleur.green(`✨ Cleaned: ${relPath}`));
         } else {
-             console.log(
-                kleur.yellow(`🔍 Would clean: ${relPath}`),
-            );
+          console.log(kleur.yellow(`🔍 Would clean: ${relPath}`));
         }
         modifiedCount++;
       }
       processedCount++;
     } catch (err) {
       console.error(
-        kleur.red(
-          `❌ Error processing ${relPath}: ${err.message}`,
-        ),
+        kleur.red(`❌ Error processing ${relPath}: ${err.message}`),
       );
     }
   });
@@ -102,7 +122,7 @@ async function handleRemoveComments(files, options) {
   console.log(kleur.dim("─".repeat(40)));
   console.log(kleur.green(`✅ Comment removal complete!`));
   console.log(
-    `📊 Stats:  ${processedCount} files scanned, ${modifiedCount} files ${options.dryRun ? 'would be' : ''} modified.`,
+    `📊 Stats:  ${processedCount} files scanned, ${modifiedCount} files ${options.dryRun ? "would be" : ""} modified.`,
   );
   console.log("");
 }

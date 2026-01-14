@@ -6,10 +6,10 @@ const diff = require("diff");
 const { copyToClipboard } = require("../utils/clipboard");
 
 async function handleDiff(file, commit = "HEAD", options) {
-    if (typeof commit === 'object' && commit !== null && !options) {
-        options = commit;
-        commit = "HEAD";
-    }
+  if (typeof commit === "object" && commit !== null && !options) {
+    options = commit;
+    commit = "HEAD";
+  }
   const filePath = path.resolve(process.cwd(), file);
   if (!fs.existsSync(filePath)) {
     console.error(kleur.red(`❌ Error: File not found at ${filePath}`));
@@ -30,7 +30,9 @@ async function handleDiff(file, commit = "HEAD", options) {
       execSync("git rev-parse --is-inside-work-tree", { stdio: "ignore" });
     } catch (e) {
       console.error(
-        kleur.red("❌ Error: Not a git repository (or any of the parent directories)."),
+        kleur.red(
+          "❌ Error: Not a git repository (or any of the parent directories).",
+        ),
       );
       process.exit(1);
     }
@@ -106,22 +108,35 @@ async function handleDiff(file, commit = "HEAD", options) {
   console.log("");
 
   if (options && options.clipboard) {
-      // Reconstruct the output for clipboard
-      let diffOutput = `Diff: ${file} (Commit: ${commit} ↔️  Local)\n`;
-      changes.forEach((part) => {
-          const value = part.value.endsWith("\n") ? part.value : part.value + "\n";
-          if (part.added) {
-             diffOutput += value.split("\n").filter(l => l).map(l => `+ ${l}`).join("\n") + "\n";
-          } else if (part.removed) {
-             diffOutput += value.split("\n").filter(l => l).map(l => `- ${l}`).join("\n") + "\n";
-          } else {
-             const contextLines = value.split("\n").filter(l => l).slice(-3);
-             if (contextLines.length > 0) {
-                 diffOutput += contextLines.map(l => `  ${l}`).join("\n") + "\n";
-             }
-          }
-      });
-      await copyToClipboard(diffOutput);
+    // Reconstruct the output for clipboard
+    let diffOutput = `Diff: ${file} (Commit: ${commit} ↔️  Local)\n`;
+    changes.forEach((part) => {
+      const value = part.value.endsWith("\n") ? part.value : part.value + "\n";
+      if (part.added) {
+        diffOutput +=
+          value
+            .split("\n")
+            .filter((l) => l)
+            .map((l) => `+ ${l}`)
+            .join("\n") + "\n";
+      } else if (part.removed) {
+        diffOutput +=
+          value
+            .split("\n")
+            .filter((l) => l)
+            .map((l) => `- ${l}`)
+            .join("\n") + "\n";
+      } else {
+        const contextLines = value
+          .split("\n")
+          .filter((l) => l)
+          .slice(-3);
+        if (contextLines.length > 0) {
+          diffOutput += contextLines.map((l) => `  ${l}`).join("\n") + "\n";
+        }
+      }
+    });
+    await copyToClipboard(diffOutput);
   }
 }
 module.exports = { handleDiff };

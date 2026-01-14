@@ -41,13 +41,17 @@ describe("handleRemoveComments", () => {
     await handleRemoveComments([], {});
     expect(walkDir).toHaveBeenCalled();
     expect(fs.writeFileSync).toHaveBeenCalledTimes(2);
-    expect(consoleLogSpy).toHaveBeenCalledWith(expect.stringContaining("Cleaned: file1.js"));
+    expect(consoleLogSpy).toHaveBeenCalledWith(
+      expect.stringContaining("Cleaned: file1.js"),
+    );
   });
 
   it("should respect dry-run", async () => {
     await handleRemoveComments([], { dryRun: true });
     expect(fs.writeFileSync).not.toHaveBeenCalled();
-    expect(consoleLogSpy).toHaveBeenCalledWith(expect.stringContaining("Would clean: file1.js"));
+    expect(consoleLogSpy).toHaveBeenCalledWith(
+      expect.stringContaining("Would clean: file1.js"),
+    );
   });
 
   it("should respect include pattern", async () => {
@@ -59,17 +63,17 @@ describe("handleRemoveComments", () => {
     await handleRemoveComments([], { include: "file1.js" });
 
     if (callback) {
-        fs.readFileSync.mockClear();
-        callback(path.join(process.cwd(), "file1.js"));
-        expect(fs.readFileSync).toHaveBeenCalled();
+      fs.readFileSync.mockClear();
+      callback(path.join(process.cwd(), "file1.js"));
+      expect(fs.readFileSync).toHaveBeenCalled();
 
-        fs.readFileSync.mockClear();
-        callback(path.join(process.cwd(), "file2.js"));
-        expect(fs.readFileSync).not.toHaveBeenCalled();
+      fs.readFileSync.mockClear();
+      callback(path.join(process.cwd(), "file2.js"));
+      expect(fs.readFileSync).not.toHaveBeenCalled();
     }
   });
 
-   it("should respect exclude pattern", async () => {
+  it("should respect exclude pattern", async () => {
     let callback;
     walkDir.mockImplementation(async (dir, config, cb) => {
       callback = cb;
@@ -78,25 +82,31 @@ describe("handleRemoveComments", () => {
     await handleRemoveComments([], { exclude: "file2.js" });
 
     if (callback) {
-        fs.readFileSync.mockClear();
-        callback(path.join(process.cwd(), "file1.js"));
-        expect(fs.readFileSync).toHaveBeenCalled();
+      fs.readFileSync.mockClear();
+      callback(path.join(process.cwd(), "file1.js"));
+      expect(fs.readFileSync).toHaveBeenCalled();
 
-        fs.readFileSync.mockClear();
-        callback(path.join(process.cwd(), "file2.js"));
-        expect(fs.readFileSync).not.toHaveBeenCalled();
+      fs.readFileSync.mockClear();
+      callback(path.join(process.cwd(), "file2.js"));
+      expect(fs.readFileSync).not.toHaveBeenCalled();
     }
   });
 
   it("should pass preserveProtected to formatCode", async () => {
-     let callback;
-     walkDir.mockImplementation(async (dir, config, cb) => { callback = cb; });
+    let callback;
+    walkDir.mockImplementation(async (dir, config, cb) => {
+      callback = cb;
+    });
 
-     await handleRemoveComments([], { preserveProtected: true });
+    await handleRemoveComments([], { preserveProtected: true });
 
-     if (callback) {
-         callback(path.join(process.cwd(), "file1.js"));
-         expect(formatCode).toHaveBeenCalledWith("some content", expect.any(String), { preserveProtected: true });
-     }
+    if (callback) {
+      callback(path.join(process.cwd(), "file1.js"));
+      expect(formatCode).toHaveBeenCalledWith(
+        "some content",
+        expect.any(String),
+        { preserveProtected: true },
+      );
+    }
   });
 });

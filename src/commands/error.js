@@ -76,7 +76,7 @@ async function handleError(logfile, options) {
     ),
   );
   if (options.clipboard) {
-      await copyToClipboard(output);
+    await copyToClipboard(output);
   }
 }
 module.exports = { handleError };

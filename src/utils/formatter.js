@@ -45,36 +45,45 @@ function getLanguage(ext) {
 
 function stripHtmlEmbedded(content, options) {
   // First strip HTML comments
-  let stripped = strip(content, { language: "html", keepProtected: options.preserveProtected });
+  let stripped = strip(content, {
+    language: "html",
+    keepProtected: options.preserveProtected,
+  });
 
   // Now try to strip JS inside <script> tags
   // This is a simple regex approach and might be fragile, but better than nothing.
   // We match content between <script...> and </script>
-  stripped = stripped.replace(/(<script[^>]*>)([\s\S]*?)(<\/script>)/gi, (match, open, scriptContent, close) => {
-    // If the script tag has a type that is not JS, we might want to skip, but standard is JS.
-    try {
-      const cleanScript = strip(scriptContent, {
-        language: "javascript",
-        keepProtected: options.preserveProtected
-      });
-      return open + cleanScript + close;
-    } catch (e) {
-      return match;
-    }
-  });
+  stripped = stripped.replace(
+    /(<script[^>]*>)([\s\S]*?)(<\/script>)/gi,
+    (match, open, scriptContent, close) => {
+      // If the script tag has a type that is not JS, we might want to skip, but standard is JS.
+      try {
+        const cleanScript = strip(scriptContent, {
+          language: "javascript",
+          keepProtected: options.preserveProtected,
+        });
+        return open + cleanScript + close;
+      } catch (e) {
+        return match;
+      }
+    },
+  );
 
   // Also style tags?
-  stripped = stripped.replace(/(<style[^>]*>)([\s\S]*?)(<\/style>)/gi, (match, open, styleContent, close) => {
-    try {
-       const cleanStyle = strip(styleContent, {
-         language: "css",
-         keepProtected: options.preserveProtected
-       });
-       return open + cleanStyle + close;
-    } catch (e) {
-      return match;
-    }
-  });
+  stripped = stripped.replace(
+    /(<style[^>]*>)([\s\S]*?)(<\/style>)/gi,
+    (match, open, styleContent, close) => {
+      try {
+        const cleanStyle = strip(styleContent, {
+          language: "css",
+          keepProtected: options.preserveProtected,
+        });
+        return open + cleanStyle + close;
+      } catch (e) {
+        return match;
+      }
+    },
+  );
 
   return stripped;
 }
@@ -86,13 +95,13 @@ function formatCode(content, filePath, options = {}) {
   // Default options
   const stripOptions = {
     keepProtected: options.preserveProtected || false,
-    language: language
+    language: language,
   };
 
   let formatted = content;
   if (language) {
     try {
-      if (language === 'html') {
+      if (language === "html") {
         formatted = stripHtmlEmbedded(content, options);
       } else {
         formatted = strip(content, stripOptions);

@@ -22,7 +22,9 @@ function handleChunk(file, options) {
       `🔪 Chunking file ${kleur.bold(file)} into ${totalChunks} parts...`,
     ),
   );
-  console.log(kleur.dim(`🔢 Total lines: ${lines.length} | Lines per chunk: ${maxLines}`));
+  console.log(
+    kleur.dim(`🔢 Total lines: ${lines.length} | Lines per chunk: ${maxLines}`),
+  );
   let output = `# File: ${file}\n# Total Chunks: ${totalChunks}\n\n`;
   output += "## Table of Contents\n";
   for (let i = 0; i < totalChunks; i++) {
@@ -48,7 +50,11 @@ function handleChunk(file, options) {
     const outputPath = path.resolve(process.cwd(), options.output);
     fs.writeFileSync(outputPath, output);
     console.log(kleur.green(`✅ Chunks saved to ${kleur.bold(outputPath)}`));
-    console.log(kleur.dim(`💾 File size: ${(fs.statSync(outputPath).size / 1024).toFixed(2)} KB`));
+    console.log(
+      kleur.dim(
+        `💾 File size: ${(fs.statSync(outputPath).size / 1024).toFixed(2)} KB`,
+      ),
+    );
   } else {
     console.log(output);
   }

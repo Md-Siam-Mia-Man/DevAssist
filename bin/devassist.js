@@ -45,7 +45,10 @@ program
   .option("--summary", "Export summary (function signatures/docstrings) only")
   .option("-c, --clipboard", "Copy the output to the system clipboard")
   .option("--interactive", "Run in interactive wizard mode")
-  .option("--template <name>", "Wrap export in a prompt template (e.g., 'refactor', 'test')")
+  .option(
+    "--template <name>",
+    "Wrap export in a prompt template (e.g., 'refactor', 'test')",
+  )
   .option("--repo <url>", "Export a remote git repository")
   .action(handleExport);
 
@@ -97,10 +100,22 @@ program
   .description(
     "🧹 Remove all comments from files (supports any language/framework).",
   )
-  .option("-i, --include <glob>", "Glob pattern to include files (comma-separated)")
-  .option("-e, --exclude <glob>", "Glob pattern to exclude files (comma-separated)")
-  .option("-d, --dry-run", "Show what files would be cleaned without modifying them")
-  .option("-p, --preserve-protected", "Preserve protected comments (beginning with !)")
+  .option(
+    "-i, --include <glob>",
+    "Glob pattern to include files (comma-separated)",
+  )
+  .option(
+    "-e, --exclude <glob>",
+    "Glob pattern to exclude files (comma-separated)",
+  )
+  .option(
+    "-d, --dry-run",
+    "Show what files would be cleaned without modifying them",
+  )
+  .option(
+    "-p, --preserve-protected",
+    "Preserve protected comments (beginning with !)",
+  )
   .action(handleRemoveComments);
 
 // --- WATCH Command ---
@@ -110,10 +125,7 @@ program
     "👀 Watch for file changes and auto-update the exported context file.",
   )
   .option("-o, --output <file>", "Specify the output file name", "context.md")
-  .option(
-    "--only <patterns>",
-    "Comma-separated list of files/dirs to include",
-  )
+  .option("--only <patterns>", "Comma-separated list of files/dirs to include")
   .option(
     "--exclude <patterns>",
     "Comma-separated list of files/dirs to exclude",
