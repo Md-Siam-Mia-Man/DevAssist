@@ -91,8 +91,8 @@ async function handleExport(options) {
       },
       {
         type: "confirm",
-        name: "tokens",
-        message: "Calculate tokens?",
+        name: "aiStats",
+        message: "Calculate AI stats (tokens, languages, etc)?",
         default: true,
       },
     ]);
@@ -241,10 +241,32 @@ async function handleExport(options) {
   console.log(`📁 Output: ${kleur.bold().underline(outputFile)}`);
   console.log(`📊 Stats:  ${collectedFiles.length} files included.`);
 
-  // Token Counting
-  if (options.tokens) {
+  // AI Stats
+  if (options.aiStats) {
+    console.log(kleur.blue(`\n🤖 AI Stats:`));
     const count = countTokens(outputContent);
-    console.log(kleur.magenta(`🧠 Estimated Tokens: ${count}`));
+    console.log(kleur.magenta(`  🧠 Estimated Tokens: ${count}`));
+
+    const lines = outputContent.split("\n").length;
+    console.log(kleur.cyan(`  📝 Total Lines: ${lines}`));
+
+    if (framework !== "Unknown") {
+      console.log(kleur.green(`  🏗️  Framework: ${framework}`));
+    }
+
+    const extensions = {};
+    collectedFiles.forEach(f => {
+      const ext = path.extname(f.relativePath).toLowerCase();
+      const lang = ext ? ext : 'No Extension';
+      extensions[lang] = (extensions[lang] || 0) + 1;
+    });
+
+    if (Object.keys(extensions).length > 0) {
+      console.log(kleur.yellow(`  🔤 Languages/Extensions:`));
+      for (const [ext, count] of Object.entries(extensions)) {
+        console.log(kleur.dim(`    - ${ext}: ${count} file(s)`));
+      }
+    }
   }
 
   // Clipboard
