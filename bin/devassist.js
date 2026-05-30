@@ -41,7 +41,7 @@ program
   )
   .option("--no-structure", "Do not export the project structure")
   .option("--gitignore", "Use .gitignore patterns to exclude files", false)
-  .option("--tokens", "Estimate the token count of the output")
+  .option("--ai-stats", "Show AI stats (tokens, lines, framework, languages)")
   .option("--summary", "Export summary (function signatures/docstrings) only")
   .option("-c, --clipboard", "Copy the output to the system clipboard")
   .option("--interactive", "Run in interactive wizard mode")
